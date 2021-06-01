@@ -1,4 +1,4 @@
-import Method as M
+import Runner as M
 import numpy as np
 import random
 import time
