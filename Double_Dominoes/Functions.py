@@ -6,6 +6,9 @@ import Trains
 import random
 
 def deal_tiles(num_players):
+    """
+    Returns a list of player objects, each player object has a list of tiles, also return the remaining draw pile.
+    """
         
     #create pile with dimension (1,2)
     pile = np.array([[12,12]])
@@ -49,7 +52,11 @@ def deal_tiles(num_players):
 
     return pile, thislist
 
+
 def create_trains(num_players):
+    """
+    Returns list of trains based on how many players there are
+    """
 
     thislist = []
 
@@ -58,9 +65,13 @@ def create_trains(num_players):
         thislist.append(Trains.Train(i, "array", False))
     
     return thislist
+
                  
 def can_i_play(playerlist, trainlist, player_num):
-    
+    """
+    Returns 1 if train is playable, else 0
+    """
+
     #if hand empty don't play
     if len(playerlist[player_num].x) == 0:
         z = 0
@@ -80,6 +91,7 @@ def can_i_play(playerlist, trainlist, player_num):
             z = 1
  
     return z
+
 
 def play_own_train(playerlist, trainlist, player_num):
     
