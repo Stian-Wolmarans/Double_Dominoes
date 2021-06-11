@@ -62,14 +62,14 @@ def create_trains(num_players):
 
     #create n + 1 variable number of trains
     for i in range((num_players + 1)):
-        thislist.append(Trains.Train(i, "array", False))
+        thislist.append(Trains.Train(i, "array", False, "store_array"))
     
     return thislist
 
                  
 def can_i_play(playerlist, trainlist, player_num):
     """
-    Returns 1 if train is playable, else 0
+    Returns True if train is playable
     """
 
     #if hand empty don't play
@@ -89,12 +89,20 @@ def can_i_play(playerlist, trainlist, player_num):
         if train == player[q]:
             #change playable state
             z = 1
- 
-    return z
+    if z == 1:
+        return True
+    elif z == 0:
+        return False
 
 
 def play_own_train(playerlist, trainlist, player_num):
-    
+    """
+    Play on own train, not sure how this function works need to revise
+    When I change things bugs pop up...
+    """
+    #TODO
+    #When adding tile to train also add to array which stores entire train
+
     #flatten arrays
     train = trainlist[player_num].x
     player = np.hstack(playerlist[player_num].x)
@@ -107,10 +115,12 @@ def play_own_train(playerlist, trainlist, player_num):
                     z = 1
                     if q % 2 == 1:
                         trainlist[player_num].set_array(player[q-1])
+                        trainlist[player_num].append_array(player[q-1])
                         player = np.delete(player, q-1)
                         player = np.delete(player, q-1)
                     if q % 2 == 0:
                         trainlist[player_num].set_array(player[q+1])
+                        trainlist[player_num].append_array(player[q+1])
                         player = np.delete(player, q)
                         player = np.delete(player, q)
     
@@ -123,9 +133,12 @@ def play_own_train(playerlist, trainlist, player_num):
 
         #replace player array
         playerlist[player_num].set_array(player)
-        
-def find_open_train(trainlist, num_players):
 
+
+def find_open_train(trainlist, num_players):
+    """
+    Returns a list of train which have their status set to open
+    """
     temp = []
     openlist = np.empty_like(temp, dtype=int)
 
@@ -135,7 +148,13 @@ def find_open_train(trainlist, num_players):
 
     return openlist
 
+
 def play_other_train(openlist, trainlist, playerlist, player_num):
+    """
+    Plays on other train, need to revise
+    """
+    #TODO
+    #When adding tile to train also add to array which stores entire train
 
     if len(playerlist[player_num].x) == 0:
         z = 0
@@ -155,10 +174,12 @@ def play_other_train(openlist, trainlist, playerlist, player_num):
                         #add to open train
                         if q % 2 == 1:
                             trainlist[i].set_array(player[q-1])
+                            trainlist[player_num].append_array(player[q-1])
                             player = np.delete(player, q-1)
                             player = np.delete(player, q-1)
                         if q % 2 == 0:
                             trainlist[i].set_array(player[q+1])
+                            trainlist[player_num].append_array(player[q+1])
                             player = np.delete(player, q)
                             player = np.delete(player, q)
 
@@ -172,9 +193,15 @@ def play_other_train(openlist, trainlist, playerlist, player_num):
 
     return z
 
-def pick_up_tile(playerlist, pile, player_num):
 
+def pick_up_tile(playerlist, pile, player_num):
+    """
+    Returns a new pile(with removed piece)
+    Returns a stop value indicating whether pile is empty or not
+    """
     stop = 0
+    #TODO
+    #Slicing?? Pop? There must be a better way to do this... 
 
     #append from pile to player
     playerlist[player_num].x = np.append(playerlist[player_num].x, pile[0])
@@ -183,7 +210,6 @@ def pick_up_tile(playerlist, pile, player_num):
     mask = np.ones(len(pile), dtype = bool)
     mask[[0]] = False
     pile = pile[mask]
-
     
     #unflatten array and return to 2d
     x = (len(playerlist[player_num].x)/2)
@@ -198,3 +224,8 @@ def pick_up_tile(playerlist, pile, player_num):
         print("NO MORE TILES")
 
     return pile, stop
+
+
+def show_played_tiles(trainlist):
+    for train in trainlist:
+        print(train.store)

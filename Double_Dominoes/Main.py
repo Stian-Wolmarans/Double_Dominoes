@@ -1,15 +1,17 @@
-import Runner as M
+import Runner
 import numpy as np
 import random
 import time
-
+"""
+Currently plays ten games with a variable number of only AI players
+"""
 game_count = 0
 
 tic = time.perf_counter()
 
 for i in range(10):
     num_players = np.random.randint(2, 8, dtype = int)
-    M.Play_Game(num_players)
+    Runner.Play_Game(num_players)
     game_count += 1
 
 toc = time.perf_counter()

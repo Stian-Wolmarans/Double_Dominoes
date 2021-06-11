@@ -1,6 +1,9 @@
 import numpy as np
 
 class Player:
+    """
+    Player class to store tiles the player holds, with a few functions to remove or add a tile
+    """
     #constructor
     def __init__(self, x, name):
         self.name = name

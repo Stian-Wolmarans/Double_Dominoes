@@ -1,12 +1,12 @@
 import Functions as F
 import numpy as np
 
-#CHECK ONE TWO THREE
-
-def Play_Game(players):
-
+def Play_Game(num_players):
+    """
+    Plays one game with all players being AI
+    Could later use this make all none real player moves
+    """
     #deal tiles, create players, create pile
-    num_players  = players
     pile, playerlist = F.deal_tiles(num_players)
 
     #create train objects, number of players + sauce train
@@ -27,14 +27,14 @@ def Play_Game(players):
 
         for i in range(num_players):
             print("///////////////////////////////PLAYER", i, "///////////////////////////////////////")
-            if F.can_i_play(playerlist, trainlist, i) == 1:
+            if F.can_i_play(playerlist, trainlist, i):
 
                 #play on own train
                 F.play_own_train(playerlist, trainlist, i)
                 pass_tally = 0
 
             #if player cannot play on own train
-            elif F.can_i_play(playerlist, trainlist, i) == 0:
+            elif not F.can_i_play(playerlist, trainlist, i):
                 print("Can't play")
 
                 #find open trains
@@ -66,10 +66,14 @@ def Play_Game(players):
             #display player tiles and their trains last tile
             print(playerlist[i].x, len(playerlist[i].x))
             print(trainlist[i].x)
-
+            F.show_played_tiles(trainlist)
+    """
     print("!!!!!!!!!!!!!!!!!!!!!!!GAME END!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
     print("Rounds played: ", count_round)
     print("Tiles left: ", len(pile))
     for i in range(num_players):
         print("Player number: ", i, "Tiles left: ", len(playerlist[i].x))
+    print("////////////////////Played Tiles/////////////////////////////")
+    """
+    F.show_played_tiles()
         
