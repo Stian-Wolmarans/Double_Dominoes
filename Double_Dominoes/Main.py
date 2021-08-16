@@ -3,18 +3,8 @@ import numpy as np
 import random
 import time
 """
-Currently plays ten games with a variable number of only AI players
+Plays game with a variable number of only AI players
 """
-game_count = 0
-
-tic = time.perf_counter()
-
-for i in range(10):
-    num_players = np.random.randint(2, 8, dtype = int)
-    Runner.Play_Game(num_players)
-    game_count += 1
-
-toc = time.perf_counter()
-time = toc - tic
-print("//////////////////////GAMES PLAYED: ", game_count, "////////////////////")
-print("//////////////////////TIME ELAPSED: ", time, "//////////////////////////")
+num_players = int(input("How many players do you want to play against?"))
+Runner.Play_Game(num_players)
+print("///////////////////////////////////////////GAME OVER///////////////////////////////////////////")
