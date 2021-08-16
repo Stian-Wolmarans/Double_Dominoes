@@ -1,4 +1,6 @@
-Program which plays double-dominoes, currently it plays until no player can move and all tiles have been picked up. The algorithm plays clockwise and doesn't employ any strategy into the play style. For instance it will not play on other open trains if it can play on its own train. It will also not consider the best of two/three/etc.. possible moves but will choose the first tile which it can play on its own train and if not start comparing with the next train. The algorithm also doesn't account for the fact that the "Sauce" train can be inserted anywhere in the play order by a player in the first few rounds.
+Double Dominoes is like dominoes with a few added rules. Firstly the numbers go up to twelve. Each player has their own "Train" where they can play their tiles. The game is started with the double 12 in the middle. Players take turns building their trains, if they can't play their train is "Opened" meaning other players can play on their train. Additionally there is a "Sauce" train which is always open and anyone can play on. If a player can't play on their own train but can play on another train their train remains closed. Lastly if a double ("Gate") is played (eg. 11-11 on a 8-11) then play can only resume once another tile has been played on the double (eg. 11-6 on the 11-11), players take turns trying to play on the double and can't play on any other trains until the "Gate" is opened, the person who played the double is the first person who needs to attempt to open it, if a player cannot open the gate they must pick up. 
+
+The AI plays clockwise and doesn't employ any strategy into the play style. For instance it will not play on other open trains if it can play on its own train. It will also not consider the best of two/three/etc.. possible moves but will choose the first tile which it can play on its own train and if not start comparing with the next train.
 
 **Update 1:**
 Packaged whole game into one method in order to play batches of games. Currently game can play between 10 - 100 games before an error occurs. Most bugs came up when player hands or pile were empty so I added some conditional statements to exit functions, thought the condition in the main methods would do the trick but apperently not. Still encountering an error when dealing tiles. In some games there seems to be an un-equal split in dividing the tiles up into sets of 11. Will create fork to attempt to rewrite the function. Will try using slicing instead of array split. Had not heard of array slicing prior to this. Currently train tiles are not stored in train but only the last placed tile is remembered,I did this because that was all that was needed to compare which trains are playable. For a visual representation it would be cool to see the whole train. 
@@ -6,9 +8,9 @@ Packaged whole game into one method in order to play batches of games. Currently
 **Update 2:**
 Merged deal_tiles, create_pile, and create_players into one function which uses simpler code, for instance slicing instead of splitting. Tried to reduce iterations where possible. Managed to let a 1000+ games run without any errors. Every game is roughly 0.2-0.4 seconds. Would be coool to reduce this time. 
 
-**Improvements:**
-  - "Sauce Train" varaible placement   
-  - Improve Comments
+**Update 3:**
+Trying to rearrange everything so that the game is playable from a users point of few not just a simulation. Trains are now stored in full and are viewable. Improved some of the commenting. Set up the structure of functions which play tiles to check if the tile is a double, is so then the Closed_Gate function is entered - which still needs to be written. Also picked up on some logical errors, the game was not being played correctly in quite a few places. For instances AI players getting double turns. Still need to write the Users turn and also need to incorporate some stratigic behavior in the AI. Noticed that it really doesn't matter where the "Sauce" train is placed if the AI considers all playable options.
+
+Improvements:**
   - Make algorithm behave strategically
-  - Allow all played tiles to be stored in train array, not just last train tile
   - Create a visual representation of the game 
