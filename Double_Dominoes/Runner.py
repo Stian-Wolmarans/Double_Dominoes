@@ -1,6 +1,4 @@
-from Players import Player
 import Functions as F
-import numpy as np
 import sys
 
 def Play_Game(num_players):
@@ -35,10 +33,11 @@ def Play_Game(num_players):
                 sys.exit(0)
 
             if F.Can_I_Play(playerlist, trainlist, i):
+                pass_tally = 0
 
                 #play on own train
-                F.Play_Own_Train(playerlist, trainlist, i)
-                pass_tally = 0
+                pile = F.Play_Own_Train(playerlist, trainlist, i, pile)
+                    
 
             #if player cannot play on own train
             elif not F.Can_I_Play(playerlist, trainlist, i):
@@ -49,7 +48,7 @@ def Play_Game(num_players):
                 print("List of open trains: ",openlist)
 
                 #if player cannot play
-                if F.Play_Other_Train(openlist, trainlist, playerlist, i):
+                if F.Play_Other_Train(openlist, trainlist, playerlist, i, pile):
                     print("AI cannot play on any open trains")
                     print("AI picking up tile from pile...")
 

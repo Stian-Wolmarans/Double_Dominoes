@@ -1,7 +1,4 @@
 import Runner
-import numpy as np
-import random
-import time
 """
 Plays game with a variable number of only AI players
 """

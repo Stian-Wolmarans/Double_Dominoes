@@ -1,4 +1,3 @@
-#import libraries
 import numpy as np
 from sklearn.utils import shuffle
 import Players
@@ -67,10 +66,15 @@ def Create_Trains(num_players):
 
     thislist = []
 
-    #create n + 1 variable number of trains
-    for i in range((num_players)):
+    #create n  variable number of trains
+    for i in range(num_players):
         thislist.append(Trains.Train(i, False))
     
+    this = num_players + 1
+    #create "Sauce"train
+    thislist.append(Trains.Train(this, False))
+    thislist[num_players].set_status(True)
+
     #create train for the user
     thislist.append(Trains.Train("user", True))
 
@@ -91,27 +95,78 @@ def Is_Winner(playerlist, player_num):
 
 def Can_I_Play(playerlist, trainlist, player_num):
     """
-    Returns True if train is playable
+    Returns True if players train is playable
     """
-    #flatten arrays
     train_tile = trainlist[player_num].x
     player_tiles = np.hstack(playerlist[player_num].x)
 
-    #compare train ends with tiles 
     for q in range(len(player_tiles)):
         if train_tile == player_tiles[q]:
             return True
+
     return False
 
 
-def Closed_Gate(playerlist, current_train, current_player):
+def Closed_Gate(playerlist, current_train, current_player, pile):
     """
     When a double is played, play is stopped until a player can "open" the train by playing on the double
     """
-    #TODO
 
+    print(f"///////////////////////////////////////////////GATE CLOSED//////////////////////////////////")
 
-def Play_Own_Train(playerlist, trainlist, player_num):
+    gate_closed = True
+    not_played = True
+    train_tile = current_train.x
+
+    #loop through all players 
+    while(gate_closed):
+        
+        #check if pile is empty and exit game
+        if len(pile) == 0:
+            return pile
+
+        player_array = playerlist[current_player].x
+        player_array = np.hstack(player_array)
+
+        #evaluate if they can play
+        for q in range(len(player_array)):
+            if not_played == True:
+                if train_tile == player_array[q]:
+
+                    not_played = False
+
+                    #since array is flattened need to check if the tile value is on the "left" or "right" of the domino piece
+                    #if modulus 2 is 1 then number is on right(array starts at 0), tile needs to be flipped
+                    if q % 2 == 1:
+                        current_train.set_array(player_array[q-1])
+                        current_train.append_store([[player_array[q],player_array[q-1]]])
+                        player_array = np.delete(player_array, q-1)
+                        player_array = np.delete(player_array, q-1)
+                        playerlist[current_player].set_array(player_array)  
+                    
+                    elif q % 2 == 0:
+                        current_train.set_array(player_array[q+1])
+                        current_train.append_store([[player_array[q],player_array[q+1]]])
+                        player_array = np.delete(player_array, q)
+                        player_array = np.delete(player_array, q)
+                        playerlist[current_player].set_array(player_array)
+
+                    #unflatten array and return to 2d
+                    x = (len(player_array)/2)
+                    player_array = np.array_split(player_array, x, axis = 0)
+                    player_array = np.vstack(player_array)
+
+                    gate_closed = False
+   
+        if current_player == (len(playerlist) - 1) or current_player == "user":
+            current_player = 0
+        else:
+            current_player += 1
+
+    print("////////////////////////////////////////////////////////////GATE OPENED///////////////////////////////////////////////") 
+    return pile
+
+def Play_Own_Train(playerlist, trainlist, player_num, pile):
     """
     Play on own train
     """
@@ -120,12 +175,12 @@ def Play_Own_Train(playerlist, trainlist, player_num):
     player_array = np.hstack(playerlist[player_num].x)
 
     #playing on own train and adding tile to train.store
-    z = 0
+    z = False
     if len(player_array) != 0:
         for q in range(len(player_array)):
-            if z == 0:
+            if z == False:
                 if train_array == player_array[q]:
-                    z = 1
+                    z = True
 
                     #since array is flattened need to check if the tile value is on the "left" or "right" of the domino piece
                     #if modulus 2 is 1 then number is on right(array starts at 0), tile needs to be flipped
@@ -143,7 +198,7 @@ def Play_Own_Train(playerlist, trainlist, player_num):
                         player_array = np.delete(player_array, q-1)
 
                         if create_gate:
-                            Closed_Gate(playerlist, trainlist[player_num], player_num)
+                            pile = Closed_Gate(playerlist, trainlist[player_num], player_num, pile)
 
                     #if modulus 2 is 0 then number is on left
                     elif q % 2 == 0:
@@ -159,8 +214,7 @@ def Play_Own_Train(playerlist, trainlist, player_num):
                         player_array = np.delete(player_array, q)
 
                         if create_gate:
-                            Closed_Gate(playerlist, trainlist[player_num], player_num) 
-                    
+                            pile = Closed_Gate(playerlist, trainlist[player_num], player_num, pile)              
                     
     
     if len(player_array) > 0:
@@ -172,6 +226,8 @@ def Play_Own_Train(playerlist, trainlist, player_num):
 
         #replace player array
         playerlist[player_num].set_array(player_array)
+    
+    return pile
         
 
 def Find_Open_Train(trainlist, num_players):
@@ -188,7 +244,7 @@ def Find_Open_Train(trainlist, num_players):
     return openlist
 
 
-def Play_Other_Train(openlist, trainlist, playerlist, player_num):
+def Play_Other_Train(openlist, trainlist, playerlist, player_num, pile):
     """
     Plays on other train, returns True if player cant play
     """
@@ -205,7 +261,7 @@ def Play_Other_Train(openlist, trainlist, playerlist, player_num):
     for i in openlist:
         for q in range(len(player_array)):
             if cant_play == True:
-                if trainlist[i] == player_array[q]:
+                if trainlist[i].x == player_array[q]:
                     cant_play = False
 
                     #since array is flattened need to check if the tile value is on the "left" or "right" of the domino piece
@@ -220,14 +276,14 @@ def Play_Other_Train(openlist, trainlist, playerlist, player_num):
                         else:
                             create_gate = False
 
-                        player = np.delete(player, q-1)
-                        player = np.delete(player, q-1)
+                        player_array = np.delete(player_array, q-1)
+                        player_array = np.delete(player_array, q-1)
 
                         if create_gate:
-                            Closed_Gate(playerlist, trainlist[player_num], player_num)
+                            pile = Closed_Gate(playerlist, trainlist[player_num], player_num, pile)
 
                     if q % 2 == 0:
-                        trainlist[i].set_array(player[q+1])
+                        trainlist[i].set_array(player_array[q+1])
                         trainlist[i].append_store([[player_array[q],player_array[q+1]]])
 
                         #checking if piece is a double, if it is then "Closed_Gate" is entered after removing tile from player pile
@@ -236,11 +292,11 @@ def Play_Other_Train(openlist, trainlist, playerlist, player_num):
                         else:
                             create_gate = False
 
-                        player = np.delete(player, q)
-                        player = np.delete(player, q)
+                        player_array = np.delete(player_array, q)
+                        player_array = np.delete(player_array, q)
 
                         if create_gate:
-                            Closed_Gate(playerlist, trainlist[player_num], player_num)
+                            pile = Closed_Gate(playerlist, trainlist[player_num], player_num, pile)
 
     #unflatten array and return to 2d
     x = (len(player_array)/2)
@@ -250,7 +306,7 @@ def Play_Other_Train(openlist, trainlist, playerlist, player_num):
     #replace player array
     playerlist[player_num].set_array(player_array)
 
-    return cant_play
+    return cant_play, pile
 
 
 def Pick_Up_Tile(playerlist, pile, player_num):
