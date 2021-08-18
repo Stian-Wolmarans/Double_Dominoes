@@ -3,7 +3,7 @@
 ## Game Rules
 Double Dominoes is like dominoes with a few added rules. Firstly the numbers go up to twelve. Each player has their own "Train" where they can play their tiles. The game is started with the double 12 in the middle. Players take turns building their trains, if they can't play their train is "Opened" meaning other players can play on their train. Additionally there is a "Sauce" train which is always open and anyone can play on. If a player can't play on their own train but can play on another train their train remains closed. Lastly if a double ("Gate") is played (eg. 11-11 on a 8-11) then play can only resume once another tile has been played on the double (eg. 11-6 on the 11-11), players take turns trying to play on the double and can't play on any other trains until the "Gate" is opened, the person who played the double is the first person who needs to attempt to open it, if a player cannot open the gate they must pick up. 
 
-##The AI
+## The AI
 The AI plays clockwise and doesn't employ any strategy into the play style. For instance it will not play on other open trains if it can play on its own train. It will also not consider the best of two/three/etc.. possible moves but will choose the first tile which it can play on its own train and if not start comparing with the next train.
 
 ### Update 1
