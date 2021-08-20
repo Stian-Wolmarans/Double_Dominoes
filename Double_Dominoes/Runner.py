@@ -6,6 +6,8 @@ def Play_Game(num_players):
     Plays one game with all players being AI
     Could later use this make all none real player moves
     """
+    winner = None
+
     #deal tiles, create players, create pile to draw tiles from
     pile, playerlist = F.Deal_Tiles(num_players)
 
@@ -27,10 +29,6 @@ def Play_Game(num_players):
 
         for i in range(num_players):
             print("///////////////////////////////////////////PLAYER", i, "///////////////////////////////////////////")
-
-            if F.Is_Winner(playerlist, num_players):
-                print("///////////////////////////////////////////GAME OVER///////////////////////////////////////////")
-                sys.exit(0)
 
             if F.Can_I_Play(playerlist, trainlist, i):
                 pass_tally = 0
@@ -76,5 +74,13 @@ def Play_Game(num_players):
             for train in trainlist:
                 print(f"Train {train.name}: {train.store}")
 
+            if F.Is_Winner(playerlist, i):
+                winner = i
+
         #users turn to play
-        F.Users_Turn()
+        pile = F.Users_Turn(playerlist, pile, trainlist)
+
+        if F.Is_Winner(playerlist, -1):
+            winner = "user"
+
+    print(f"The Winner is, Player: {winner}")

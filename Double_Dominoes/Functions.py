@@ -141,20 +141,20 @@ def Closed_Gate(playerlist, current_train, current_player, pile):
                         current_train.set_array(player_array[q-1])
                         current_train.append_store([[player_array[q],player_array[q-1]]])
                         player_array = np.delete(player_array, q-1)
-                        player_array = np.delete(player_array, q-1)
-                        playerlist[current_player].set_array(player_array)  
+                        player_array = np.delete(player_array, q-1)  
                     
                     elif q % 2 == 0:
                         current_train.set_array(player_array[q+1])
                         current_train.append_store([[player_array[q],player_array[q+1]]])
                         player_array = np.delete(player_array, q)
                         player_array = np.delete(player_array, q)
-                        playerlist[current_player].set_array(player_array)
 
                     #unflatten array and return to 2d
                     x = (len(player_array)/2)
-                    player_array = np.array_split(player_array, x, axis = 0)
-                    player_array = np.vstack(player_array)
+                    if x > 0:
+                        player_array = np.array_split(player_array, x, axis = 0)
+                        player_array = np.vstack(player_array)
+                        playerlist[current_player].set_array(player_array)
 
                     gate_closed = False
    
@@ -165,6 +165,7 @@ def Closed_Gate(playerlist, current_train, current_player, pile):
 
     print("////////////////////////////////////////////////////////////GATE OPENED///////////////////////////////////////////////") 
     return pile
+
 
 def Play_Own_Train(playerlist, trainlist, player_num, pile):
     """
@@ -197,6 +198,15 @@ def Play_Own_Train(playerlist, trainlist, player_num, pile):
                         player_array = np.delete(player_array, q-1)
                         player_array = np.delete(player_array, q-1)
 
+                        #unflatten array and return to 2d
+                        x = (len(player_array)/2)
+                        if x > 0:
+                            player_array = np.array_split(player_array, x, axis = 0)
+                            player_array = np.vstack(player_array)
+
+                            #replace player array
+                            playerlist[player_num].set_array(player_array)
+
                         if create_gate:
                             pile = Closed_Gate(playerlist, trainlist[player_num], player_num, pile)
 
@@ -213,20 +223,18 @@ def Play_Own_Train(playerlist, trainlist, player_num, pile):
                         player_array = np.delete(player_array, q)
                         player_array = np.delete(player_array, q)
 
-                        if create_gate:
-                            pile = Closed_Gate(playerlist, trainlist[player_num], player_num, pile)              
-                    
-    
-    if len(player_array) > 0:
-            
-        #unflatten array and return to 2d
-        x = (len(player_array)/2)
-        player_array = np.array_split(player_array, x, axis = 0)
-        player_array = np.vstack(player_array)
+                        #unflatten array and return to 2d
+                        x = (len(player_array)/2)
+                        if x > 0:
+                            player_array = np.array_split(player_array, x, axis = 0)
+                            player_array = np.vstack(player_array)
 
-        #replace player array
-        playerlist[player_num].set_array(player_array)
-    
+                            #replace player array
+                            playerlist[player_num].set_array(player_array)
+
+                        if create_gate:
+                            pile = Closed_Gate(playerlist, trainlist[player_num], player_num, pile)   
+
     return pile
         
 
@@ -258,11 +266,13 @@ def Play_Other_Train(openlist, trainlist, playerlist, player_num, pile):
 
     #setting loop to only compare with open trains
     cant_play = True
+    flattened = True
     for i in openlist:
         for q in range(len(player_array)):
             if cant_play == True:
                 if trainlist[i].x == player_array[q]:
                     cant_play = False
+                    Flattened = False
 
                     #since array is flattened need to check if the tile value is on the "left" or "right" of the domino piece
                     #if modulus 2 is 1 then number is on right(array starts at 0), tile needs to be flipped
@@ -278,6 +288,15 @@ def Play_Other_Train(openlist, trainlist, playerlist, player_num, pile):
 
                         player_array = np.delete(player_array, q-1)
                         player_array = np.delete(player_array, q-1)
+                        
+                        #unflatten array and return to 2d
+                        x = (len(player_array)/2)
+                        if x > 0:
+                            player_array = np.array_split(player_array, x, axis = 0)
+                            player_array = np.vstack(player_array)
+
+                            #replace player array
+                            playerlist[player_num].set_array(player_array)
 
                         if create_gate:
                             pile = Closed_Gate(playerlist, trainlist[player_num], player_num, pile)
@@ -295,16 +314,17 @@ def Play_Other_Train(openlist, trainlist, playerlist, player_num, pile):
                         player_array = np.delete(player_array, q)
                         player_array = np.delete(player_array, q)
 
+                        #unflatten array and return to 2d
+                        x = (len(player_array)/2)
+                        if x > 0:
+                            player_array = np.array_split(player_array, x, axis = 0)
+                            player_array = np.vstack(player_array)
+
+                            #replace player array
+                            playerlist[player_num].set_array(player_array)
+
                         if create_gate:
                             pile = Closed_Gate(playerlist, trainlist[player_num], player_num, pile)
-
-    #unflatten array and return to 2d
-    x = (len(player_array)/2)
-    player_array = np.array_split(player_array, x, axis = 0)
-    player_array = np.vstack(player_array)
-
-    #replace player array
-    playerlist[player_num].set_array(player_array)
 
     return cant_play, pile
 
@@ -336,5 +356,36 @@ def Pick_Up_Tile(playerlist, pile, player_num):
     return pile
 
 
-def Users_Turn():
+def Users_Turn(playerlist, pile, trainlist):
+    """
+    Gives the user some options and plays accordingly, returns pile
+    """
     print("///////////////////////////////////////////YOUR TURN///////////////////////////////////////////")
+
+    #show trains list
+    for train in trainlist: 
+        print(f"Train {train.name}: {train.store}")
+
+    #show users pieces
+    print(f"Your tiles: {playerlist[-1].x}")
+
+    #select piece eg. 10 10 (two integers)
+    #convert input into format to compare with players pieces
+    #ask again if player doesn't have piece
+    piece = input("Select piece to play... (type two intergers)")
+    print(f"Piece: {piece}")
+
+    #ask wish train they wish to play on
+
+
+    #play on train
+
+
+    #remove piece from users array
+
+
+    #if cannot play pick up piece, and remove from pile
+    if len(pile) == 0:
+        return pile
+    pile = Pick_Up_Tile(playerlist, pile, -1)
+    return pile
