@@ -12,7 +12,7 @@ To improve the AI I could add considerations such as:
 - Saving Doubles to be able to play a double turn
 
 ## Notes
-- I decided to user numpy instead of lists to store tiles. The difference in speed is probably negligable and lists would've been a lot simpler but I wanted to try and get familiar with the library.
+- I decided to use numpy instead of lists to store tiles. The difference in speed is probably negligable and lists would've been a lot simpler but I wanted to try and get familiar with the library.
 
 - The game is a console game so it's not very user friendly but is playable. This was more an exercise for me to impliment what I've learned in python so far. The focus for me was using numpy and creating an AI. Would be cool to create a visual representation of the game but I'd rather move on to another project.
 
@@ -28,9 +28,12 @@ Trying to rearrange everything so that the game is playable from a users point o
 ### Update 4
 Fixed a lot of logical errors and a few bugs in the Runner.py file. Also in the Functions.py file. Almost finished the Gate_Closed function. Noticed that in both the Play On Train and Gate_Closed functions I forgot to update the pile. This caused a problem as the functions don't take in the pile in the Runner.py file. So I had to pass it in which complicated things, would be better if a created a pile class like I did with Players and Trains. Should probably have taken a top down approach and designed the structure in the beggining. 
 
+### Update 5
+Finished users_turn function and fixed bugs/logical errors. Also made information which is desplayed in the console more readable  
+
 ## Future Tasks
-  - Make algorithm behave strategically
-  - Rewrite Runner.py
-  - Helper function --> Determine Side of domino and play
-  - Finish Gate_Closed function --> Players need to pick up tiles...
+  - Rewrite Runner.py (make it more readable)
+  - Create Pile class
+  - Helper function --> Determine Side of domino and play (remove dupilicated code)
+  - Algorithm beahvior --> Stratigically
   - Create a visual representation of the game (maybe)
