@@ -24,7 +24,7 @@ class Player:
 
     #delete value
     def delete_value(self, y):
-        np.delete(self.x, y)
+        self.x = np.delete(self.x, y)
     
      
 

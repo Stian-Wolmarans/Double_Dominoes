@@ -68,11 +68,8 @@ def Play_Game(num_players):
                 else:
                     pass_tally = 0              
 
-            #display player tiles and their trains
-            print(f"AI player tiles: {playerlist[i].x}")
-            print("///////////////////////////////////////////TRAINS///////////////////////////////////////////")
-            for train in trainlist:
-                print(f"Train {train.name}: {train.store}")
+            #display count ai tiles
+            print(f"Player {i} tiles left: {len(playerlist[i].x)}")
 
             if F.Is_Winner(playerlist, i):
                 winner = i
@@ -81,6 +78,6 @@ def Play_Game(num_players):
         pile = F.Users_Turn(playerlist, pile, trainlist)
 
         if F.Is_Winner(playerlist, -1):
-            winner = "user"
+            winner = "YOU"
 
     print(f"The Winner is, Player: {winner}")

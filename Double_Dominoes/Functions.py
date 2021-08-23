@@ -70,13 +70,14 @@ def Create_Trains(num_players):
     for i in range(num_players):
         thislist.append(Trains.Train(i, False))
     
-    this = num_players + 1
     #create "Sauce"train
+    this = num_players
     thislist.append(Trains.Train(this, False))
     thislist[num_players].set_status(True)
 
     #create train for the user
-    thislist.append(Trains.Train("user", True))
+    this = num_players + 1
+    thislist.append(Trains.Train(this, True))
 
     return thislist
 
@@ -123,6 +124,7 @@ def Closed_Gate(playerlist, current_train, current_player, pile):
         
         #check if pile is empty and exit game
         if len(pile) == 0:
+            print("//////////////////////////GATE LOCKED, GAME OVER///////////////////////////////////")
             return pile
 
         player_array = playerlist[current_player].x
@@ -356,6 +358,22 @@ def Pick_Up_Tile(playerlist, pile, player_num):
     return pile
 
 
+def Can_User_Play(trainlist, playerlist, playernum = -1):
+    """
+    Returns true if player can play on any train, returns false otherwise
+    """
+    
+    player_array = np.hstack(playerlist[playernum].x)
+    
+    for i in range(len(trainlist)):
+        train_array = trainlist[i].x
+        if trainlist[i].status == True:
+            for j in range(len(player_array)):
+                if train_array == player_array[j]:
+                    return True
+    return False
+
+
 def Users_Turn(playerlist, pile, trainlist):
     """
     Gives the user some options and plays accordingly, returns pile
@@ -363,29 +381,97 @@ def Users_Turn(playerlist, pile, trainlist):
     print("///////////////////////////////////////////YOUR TURN///////////////////////////////////////////")
 
     #show trains list
-    for train in trainlist: 
-        print(f"Train {train.name}: {train.store}")
+    for train in trainlist:
+        this = "CLOSED"
+        if train.status:
+            this = "OPEN" 
+        print(f"Train {train.name} ({this})")
+        print("------------------------------")
+        print(f"{train.store}")
+        print("------------------------------")
 
     #show users pieces
-    print(f"Your tiles: {playerlist[-1].x}")
+    print(f"Your tiles:")
+    print(f"{playerlist[-1].x}")
 
-    #select piece eg. 10 10 (two integers)
-    #convert input into format to compare with players pieces
-    #ask again if player doesn't have piece
-    piece = input("Select piece to play... (type two intergers)")
-    print(f"Piece: {piece}")
+    #check if user can play
+    if Can_User_Play(trainlist, playerlist):
 
-    #ask wish train they wish to play on
+        player_array = np.hstack(playerlist[-1].x)
+        valid_piece = False
+        valid_train = False
+        playable = False
 
+        #ask for user input and check validity
+        while(not valid_train and not playable and not valid_piece):
 
-    #play on train
+            #ask for piece to be played
+            print("Please select a valid piece")
+            a, b = map(int, input("Enter two integers with a space inbetween: ").split())
+            piece = [a, b]
+            print(f"You've selected piece: {piece}")
 
+            #check if player has piece
+            for p in range(0, len(player_array), 2):
+                if piece[0] == player_array[p] and piece[1] == player_array[p+1]:
+                    piece_reference = p
+                    valid_piece = True
+                else:
+                    continue   
 
-    #remove piece from users array
+            #ask wish train they wish to play on
+            print("Select an open train...")
+            selected_train = int(input("Enter the train number you want to play on: "))
 
+            #check if train is open and playable
+            if trainlist[selected_train].x == piece[0] or trainlist[selected_train].x == piece[1]:
+                playable = True
+            else:
+                continue
+            if trainlist[selected_train].status == True and playable:
+                valid_train = True      
+            else:
+                continue    
 
-    #if cannot play pick up piece, and remove from pile
-    if len(pile) == 0:
+            #compare piece to train to determine whether to flip the piece
+            if player_array[piece_reference] == trainlist[selected_train].x:
+                flip = False
+            if player_array[piece_reference + 1] == trainlist[selected_train].x:
+                flip = True
+
+            #play piece on train
+            if flip:
+                piece = [b, a]
+            trainlist[selected_train].set_array(piece[1])
+            trainlist[selected_train].append_store(piece)
+
+            #remove piece from users array
+            #checking if piece is a double, if it is then "Closed_Gate" is entered after removing tile from player pile
+            if player_array[piece_reference] == player_array[piece_reference + 1]:
+                create_gate = True
+            else:
+                create_gate = False
+
+            player_array = np.delete(player_array, piece_reference)
+            player_array = np.delete(player_array, piece_reference)
+
+            #unflatten array and return to 2d
+            x = (len(player_array)/2)
+            if x > 0:
+                player_array = np.array_split(player_array, x, axis = 0)
+                player_array = np.vstack(player_array)
+
+                #replace player array
+                playerlist[-1].set_array(player_array)
+
+            if create_gate:
+                pile = Closed_Gate(playerlist, trainlist[-1], -1, pile)
+
+        return pile 
+
+    #if cannot play pick up piece, and remove from pile    
+    else:        
+        if len(pile) == 0:
+            return pile
+        pile = Pick_Up_Tile(playerlist, pile, -1)
         return pile
-    pile = Pick_Up_Tile(playerlist, pile, -1)
-    return pile
