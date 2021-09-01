@@ -29,11 +29,12 @@ Trying to rearrange everything so that the game is playable from a users point o
 Fixed a lot of logical errors and a few bugs in the Runner.py file. Also in the Functions.py file. Almost finished the Gate_Closed function. Noticed that in both the Play On Train and Gate_Closed functions I forgot to update the pile. This caused a problem as the functions don't take in the pile in the Runner.py file. So I had to pass it in which complicated things, would be better if a created a pile class like I did with Players and Trains. Should probably have taken a top down approach and designed the structure in the beggining. 
 
 ### Update 5
-Finished users_turn function and fixed bugs/logical errors. Also made information which is desplayed in the console more readable  
+Finished users_turn function and fixed bugs/logical errors. Also made information which is desplayed in the console more readable
+
+### Update 6
+Created pile class with constructor and methods. Shortened a lot of the code in Functions.py, almost halved the code. Improved comments and changed some variable names for readability. Is_Winner() now exits the program instead of returning a boolean. Rewrote Runner.py, much simpler and readable now. Added some methods to the trains and players classes, meaning less code elsewhere. Fixed some logical errors in Closed_Gate, some scenarios I didn't think of before are now accounted for. Deleted the AI turn as I want to build it again from scratch with strategical considerations in mind.
 
 ## Future Tasks
-  - Rewrite Runner.py (make it more readable)
-  - Create Pile class
   - Helper function --> Determine Side of domino and play (remove dupilicated code)
   - Algorithm beahvior --> Stratigically
-  - Create a visual representation of the game (maybe)
+  - Create a visual representation of the game
