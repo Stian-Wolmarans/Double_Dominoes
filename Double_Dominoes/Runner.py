@@ -1,83 +1,49 @@
-import Functions as F
+import Functions_v2 as Function
 import sys
+import AI as AI
 
 def Play_Game(num_players):
     """
-    Plays one game with all players being AI
-    Could later use this make all none real player moves
+    Starts game with one User and a variable number of AI players
     """
-    winner = None
-
-    #deal tiles, create players, create pile to draw tiles from
-    pile, playerlist = F.Deal_Tiles(num_players)
+    #create players, create pile and deal tiles
+    pile, players = Function.Deal_Tiles(num_players)
 
     #create train objects: number of AI players + sauce train + user train
-    trainlist = F.Create_Trains(num_players)
-
-    #open sauce train
-    trainlist[-1].set_status(True)
+    trains = Function.Create_Trains(num_players)
 
     #variable to stop game if no one can play
     pass_tally = 0
     count_round = 0
-
-    #play rounds
-    while (len(pile) != 0 or pass_tally < num_players+1):
+    
+    #loop through rounds, stops when no one can play and pile is empty
+    while (pile.check_length != 0 or pass_tally < num_players+2):
         count_round += 1
 
-        print("///////////////////////////////////////////ROUND START", count_round, "///////////////////////////////////////////")
+        for player_num in range(num_players):
+           
+            #Check if AI can play and make move
+            if Function.Can_Play(players, trains, player_num):
+                AI.Make_Move(players, pile, trains, player_num, num_players)
+            
+            #Pick up, open train and increment tally
+            else:
+                Function.Pick_Up_Tile(players, pile, player_num)
+                trains[player_num].open_train()
+                pass_tally += 1
 
-        for i in range(num_players):
-            print("///////////////////////////////////////////PLAYER", i, "///////////////////////////////////////////")
+            #Check if AI is winner
+            Function.Is_Winner(players, player_num)
 
-            if F.Can_I_Play(playerlist, trainlist, i):
-                pass_tally = 0
+        #Check if user can play
+        if Function.Can_Play(players, trains, player_num = -1):
+            Function.Users_Turn(players, trains, pile, num_players)
+        else:
+            Function.Pick_Up_Tile(players, pile, player_num = -1)
+            trains[-1].open_train
+            pass_tally += 1
 
-                #play on own train
-                pile = F.Play_Own_Train(playerlist, trainlist, i, pile)
-                    
-
-            #if player cannot play on own train
-            elif not F.Can_I_Play(playerlist, trainlist, i):
-                print("AI can't play")
-
-                #find open trains
-                openlist = F.Find_Open_Train(trainlist, num_players)
-                print("List of open trains: ",openlist)
-
-                #if player cannot play
-                if F.Play_Other_Train(openlist, trainlist, playerlist, i, pile):
-                    print("AI cannot play on any open trains")
-                    print("AI picking up tile from pile...")
-
-                    if len(pile) == 0:
-                        pass_tally += 1
-                        return
-
-                    #pick up from pile
-                    pile = F.Pick_Up_Tile(playerlist, pile, i)
-                        
-                    print("Opening AI train")
-                    print("List of open trains:", openlist)
-
-                    #open train
-                    trainlist[i].set_status(True)
-                    pass_tally += 1
-
-                #if player can play on another train
-                else:
-                    pass_tally = 0              
-
-            #display count ai tiles
-            print(f"Player {i} tiles left: {len(playerlist[i].x)}")
-
-            if F.Is_Winner(playerlist, i):
-                winner = i
-
-        #users turn to play
-        pile = F.Users_Turn(playerlist, pile, trainlist)
-
-        if F.Is_Winner(playerlist, -1):
-            winner = "YOU"
-
-    print(f"The Winner is, Player: {winner}")
+        #Check if user is winner            
+        Function.Is_Winner(players, player_num = -1)
+    
+    print("GAME OVER --> NO WINNER")
