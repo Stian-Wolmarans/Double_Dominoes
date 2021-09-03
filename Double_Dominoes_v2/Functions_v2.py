@@ -14,13 +14,12 @@ def Deal_Tiles(num_players):
     pile_object = Pile.Pile()
     players = []
 
-    #create AI players and User
+    #create AI players
     for i in range(num_players):
         players.append(Players.Player(i, False))
-    players.append(Players.Player((num_players), True))
 
     #deal tiles to players
-    for i in range(num_players+1):
+    for i in range(num_players ):
         np.copyto(players[i].tiles, pile_object.Create_Slice())
 
     return pile_object, players
@@ -42,10 +41,6 @@ def Create_Trains(num_players):
     trains.append(Trains.Train(name,"Sauce", False))
     trains[num_players].open_train()
 
-    #create user train
-    name = num_players + 1
-    trains.append(Trains.Train(name, "User", True))
-
     return trains
 
 
@@ -53,6 +48,7 @@ def Is_Round_Winner(players, player_num):
     """
     Check whether hand is empty, returns True if round is won
     """
+
     if len(players[player_num].tiles) == 0:
         return True
     else:
@@ -73,7 +69,7 @@ def Can_Play(players, trains, player_num):
 
     #check other trains
     for train in trains:
-        if train.open:
+        if train.open == True:
             for q in range(len(player_tiles)):
                 if train.last_tile == player_tiles[q]:
                     return True
@@ -117,7 +113,7 @@ def Closed_Gate(players, gated_train, current_player, pile, num_players):
                 break
         
         #pick up if they couldn't play
-        if gate_closed and pile.check_length() != 0:
+        if gate_closed:
             Pick_Up_Tile(players, pile, current_player)
         
         #iterate through all the players
@@ -156,92 +152,4 @@ def Pick_Up_Tile(players, pile, player_num):
     """
     Adds tile to players array and removes it from the pile
     """
-    if pile.check_length() != 0:
-        players[player_num].append_array(pile.Pick_Up())
-
-
-def print_trains(trains):
-    for train in trains:
-        status = "CLOSED"
-        if train.open:
-            status = "OPEN"
-        print(f"{train.display_name}")
-        print(f"Train {train.name} ({status})")
-        print("------------------------------")
-        print(f"{train.store}")
-        print("------------------------------")
-        print("")
-
-
-def Users_Turn(players, trains, pile, num_players):
-    """
-    Gives the user some options and plays accordingly
-    """
-    print("///////////////////////////////////////////YOUR TURN///////////////////////////////////////////")
-
-    print_trains(trains)    
-
-    #show users pieces
-    print(f"Your tiles:")
-    print(f"{players[-1].tiles}")
-
-    #flatten array and set variables
-    player_array = np.hstack(players[-1].tiles)
-    valid_piece = False
-    valid_train = False
-    playable = False
-
-    #ask for user input and check validity
-    while(not valid_train or not playable or not valid_piece):
-
-        print("Please select a valid piece")
-        try:
-            a, b = map(int, input("Enter two integers with a space inbetween: ").split())
-        except ValueError:
-            continue
-        piece = [a, b]
-        print(f"You've selected piece: {piece}")
-
-        #check if player has piece
-        for p in range(0, len(player_array), 2):
-            if piece[0] == player_array[p] and piece[1] == player_array[p+1]:
-                piece_reference = p
-                valid_piece = True
-                
-        if not valid_piece:
-            continue   
-
-        print("Select a playable train...")
-        selected_train = int(input("Enter the train number you want to play on: "))
-
-        #check if train is open and playable
-        if trains[selected_train].last_tile == piece[0] or trains[selected_train].last_tile == piece[1]:
-            playable = True
-        else:
-            print("You can't play on that train...")
-            continue
-        if trains[selected_train].open or trains[selected_train].user:
-            valid_train = True      
-        else:
-            print("You can't play on that train...")
-            continue    
-
-        #compare piece to train to determine whether to flip the piece
-        if player_array[piece_reference] == trains[selected_train].last_tile:
-            flip = False
-        if player_array[piece_reference + 1] == trains[selected_train].last_tile:
-            flip = True
-
-        #play piece on train, flip if necessary
-        if flip:
-            piece = [b, a]
-        trains[selected_train].set_last_tile(piece[1])
-        trains[selected_train].append_train(piece)
-
-        position = int(piece_reference/2)
-        players[-1].delete_position(position)
-
-        #checking if piece is a double, if it is then "Closed_Gate()" will be entered after removing tile from players pile
-        if player_array[piece_reference] == player_array[piece_reference + 1]:
-            if Closed_Gate(players, trains[selected_train], -1, pile, num_players):
-                return True
+    players[player_num].append_array(pile.Pick_Up())
