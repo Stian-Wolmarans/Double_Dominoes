@@ -1,18 +1,13 @@
 # Double Dominoes
 
 ## Game Rules
-Double Dominoes is like dominoes with a few added rules. Firstly the numbers go up to twelve. Each player has their own "Train" where they can play their tiles. The game is started with the double 12 in the middle. Players take turns building their trains, if they can't play their train is "Opened" meaning other players can play on their train. Additionally there is a "Sauce" train which is always open and anyone can play on. If a player can't play on their own train but can play on another train their train remains closed. Lastly if a double ("Gate") is played (eg. 11-11 on a 8-11) then play can only resume once another tile has been played on the double (eg. 11-6 on the 11-11), players take turns trying to play on the double and can't play on any other trains until the "Gate" is opened, the person who played the double is the first person who needs to attempt to open it, if a player cannot open the gate they must pick up. Game ends when there are no more tile to pick up or everyone has played all their dominoes. The win order is determined by who finished their tiles first, second, etc..
+Double Dominoes - also known as Mexican Train - is like dominoes with a few added rules. Firstly the numbers go up to twelve. Each player has their own "Train" where they can play their tiles. The game is started with the double 12 in the middle. Players take turns building their trains, if they can't play their train is "Opened" meaning other players can play on their train. If a player plays on their own "Open" train it is closed again and only they can play on it. Additionally there is a "Sauce" train which is always open and anyone can play on. If a player can't play on their own train but can play on another train their train remains closed. Lastly if a double ("Gate") is played (eg. 11-11 on a 8-11) then play can only resume once another tile has been played on the double (eg. 11-6 on the 11-11), players take turns trying to play on the double and can't play on any other trains until the "Gate" is opened, the person who played the double is the first person who needs to attempt to open it, if a player cannot open the gate they must pick up. Game ends when there are no more tile to pick up or everyone has played all their dominoes. The win order is determined by who finished their tiles first, second, etc..
 
 ## The AI
-The AI plays clockwise and doesn't employ any strategy into the play style. For instance it will not play on other open trains if it can play on its own train. It will also not consider the best of two/three/etc.. possible moves but will choose the first tile which it can play on its own train and if not start comparing with the next train.
-
-To improve the AI I could add considerations such as:
-- Evaluating other open trains first before own train
-- Checking for sequences in hand and saving those to play in specific order on own train
-- Saving Doubles to be able to play a double turn
+The AI in version 1 plays randomly. I did this to create a benchmark to compare with.
 
 ## Notes
-- I decided to use numpy instead of lists to store tiles. The difference in speed is probably negligable and lists would've been a lot simpler but I wanted to try and get familiar with the library.
+- I decided to use numpy instead of lists to store tiles. The difference in speed is probably negligable and lists would've been a lot simpler but I wanted to try and get familiar with the library. I only later discovered that numpy is very slow when appending things to a array as it creates a new copy everytime. Lists is also be a lot easier to index tiles as a list of tuples can be used, which is what I decided to use in version 2 when making the stratigically acting AI.
 
 - The game is a console game so it's not very user friendly but is playable. This was more an exercise for me to impliment what I've learned in python so far. The focus for me was using numpy and creating an AI. Would be cool to create a visual representation of the game but I'd rather move on to another project.
 
@@ -32,9 +27,7 @@ Fixed a lot of logical errors and a few bugs in the Runner.py file. Also in the 
 Finished users_turn function and fixed bugs/logical errors. Also made information which is desplayed in the console more readable
 
 ### Update 6
-Created pile class with constructor and methods. Shortened a lot of the code in Functions.py, almost halved the code. Improved comments and changed some variable names for readability. Is_Winner() now exits the program instead of returning a boolean. Rewrote Runner.py, much simpler and readable now. Added some methods to the trains and players classes, meaning less code elsewhere. Fixed some logical errors in Closed_Gate, some scenarios I didn't think of before are now accounted for. Deleted the AI turn as I want to build it again from scratch with strategical considerations in mind.
+Created pile class with constructor and methods. Shortened a lot of the code in Functions.py. Improved comments and changed some variable names for readability. Is_Winner() now exits the program instead of returning a boolean. Rewrote Runner.py, much simpler and readable now. Added some methods to the trains and players classes, meaning less code elsewhere. Fixed some logical errors in Closed_Gate, some scenarios I didn't think of before are now accounted for. Deleted the AI turn as I want to build it again from scratch with strategical considerations in mind.
 
-## Future Tasks
-  - Helper function --> Determine Side of domino and play (remove dupilicated code)
-  - Algorithm beahvior --> Stratigically
-  - Create a visual representation of the game
+### Update 7
+Fixed some bugs and logical errors. Wrote the AI algorithm which plays randomly from all possible moves as aposed to playing the first move it finds. I'll use this AI as a benchmark to compare with. Game now plays multiple rounds and keeps track of scores, something which was excluded. Created a version two of the game which will be only AI's and will use lists instead of numpy arrays.
