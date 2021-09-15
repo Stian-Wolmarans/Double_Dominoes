@@ -1,9 +1,6 @@
-from os import name
-import numpy as np
-from sklearn.utils import shuffle
-import Players
-import Pile
-import Trains
+import Players_v2 as Players
+import Pile_v2 as Pile
+import Trains_v2 as Trains
 import sys
 
 def Deal_Tiles(num_players):
@@ -19,8 +16,10 @@ def Deal_Tiles(num_players):
         players.append(Players.Player(i, False))
 
     #deal tiles to players
-    for i in range(num_players ):
-        np.copyto(players[i].tiles, pile_object.Create_Slice())
+    for i in range(num_players):
+        slice = pile_object.Create_Slice()
+        for object in slice:
+            players[i].tiles.append(object)
 
     return pile_object, players
 
@@ -60,18 +59,22 @@ def Can_Play(players, trains, player_num):
     Returns true if player can play on any train
     """
 
-    player_tiles = np.hstack(players[player_num].tiles)
+    player_tiles = players[player_num].tiles
 
     #check own train
     for q in range(len(player_tiles)):
-        if trains[player_num].last_tile == player_tiles[q]:
+        if trains[player_num].last_tile == player_tiles[q][0]:
+            return True
+        if trains[player_num].last_tile == player_tiles[q][1]:
             return True
 
     #check other trains
     for train in trains:
         if train.open == True:
             for q in range(len(player_tiles)):
-                if train.last_tile == player_tiles[q]:
+                if train.last_tile == player_tiles[q][0]:
+                    return True
+                if train.last_tile == player_tiles[q][1]:
                     return True
 
     return False
@@ -137,13 +140,11 @@ def Find_Open_Trains(trains, num_players):
     """
     Returns a list of "Open" trains
     """
-    
-    temp = []
-    openlist = np.empty_like(temp, dtype=int)
+    openlist = []
 
     for i in range(num_players+1):
         if (trains[i].get_status()) == True:
-            openlist = np.append(openlist, i)
+            openlist.append(i)
 
     return openlist
 
@@ -152,4 +153,4 @@ def Pick_Up_Tile(players, pile, player_num):
     """
     Adds tile to players array and removes it from the pile
     """
-    players[player_num].append_array(pile.Pick_Up())
+    players[player_num].tiles.append(pile.Pick_Up())

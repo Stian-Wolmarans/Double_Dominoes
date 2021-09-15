@@ -1,7 +1,6 @@
 from typing import Dict
 import Functions_v2
 import sys
-import numpy as np
 import AI_1
 
 def Who_Wins(scores):
@@ -20,7 +19,7 @@ def Who_Wins(scores):
         if i == winner:
             continue
         if scores[i] == winner_score:
-            tie = True
+            Tie = True
             winners = (winner, i)
 
     if Tie:
@@ -49,11 +48,11 @@ def Tally_Scores(players, scores):
     """
 
     for player in players:
-        tiles = np.hstack(player.tiles)
         score = 0
-        for value in tiles:
-            score += value
-        scores[player.name] += score
+        for value in player.tiles:
+            score += value[0]
+            score += value[1]
+        scores[str(player.name)] += score
     
     return scores
 
@@ -81,7 +80,7 @@ def Start_Game(num_players):
         round_over = False
         
         #loop through rounds, stops when no one can play and pile is empty
-        while (pile.check_length != 0 or pass_tally < num_players+2):
+        while (len(pile.tiles) != 0 or pass_tally < num_players+2):
             
             for player_num in range(num_players):
             
@@ -92,7 +91,8 @@ def Start_Game(num_players):
                 
                 #Pick up, open train and increment tally
                 else:
-                    Functions_v2.Pick_Up_Tile(players, pile, player_num)
+                    if len(pile.tiles) != 0:
+                        Functions_v2.Pick_Up_Tile(players, pile, player_num)
                     trains[player_num].open_train()
                     pass_tally += 1
 
@@ -103,7 +103,7 @@ def Start_Game(num_players):
             if round_over:
                 break
 
-        scores = Tally_Scores(players)
+        scores = Tally_Scores(players, scores)
 
     print(f"Scores: {scores}")
     print("Game Over")
