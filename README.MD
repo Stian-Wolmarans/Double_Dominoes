@@ -7,7 +7,7 @@ Double Dominoes - also known as Mexican Train - is like dominoes with a few adde
 The AI in version 1 plays randomly. I did this to create a benchmark to compare with.
 
 ## Notes
-- I decided to use numpy instead of lists to store tiles. The difference in speed is probably negligable and lists would've been a lot simpler but I wanted to try and get familiar with the library. I only later discovered that numpy is very slow when appending things to a array as it creates a new copy everytime. Lists is also be a lot easier to index tiles as a list of tuples can be used, which is what I decided to use in version 2 when making the stratigically acting AI.
+- I decided to use numpy instead of lists to store tiles. The difference in speed is probably negligable and lists would've been a lot simpler but I wanted to try and get familiar with the library. I only later discovered that numpy is very slow when appending things to an array as it creates a new copy everytime. Lists is also a lot easier to index tiles as a list of tuples can be used, which is what I decided to use in version 2 when making the stratigically acting AI. The idea behind version 2 was to compare the AIs and use lists instead of numpy arrays.
 
 - The game is a console game so it's not very user friendly but is playable. This was more an exercise for me to impliment what I've learned in python so far. The focus for me was using numpy and creating an AI. Would be cool to create a visual representation of the game but I'd rather move on to another project.
 
