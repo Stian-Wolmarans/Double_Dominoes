@@ -1,7 +1,6 @@
 import Players_v2 as Players
 import Pile_v2 as Pile
 import Trains_v2 as Trains
-import sys
 
 def Deal_Tiles(num_players):
     """

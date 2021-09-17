@@ -1,12 +1,12 @@
-from typing import Dict
 import Functions_v2
-import sys
-import AI_1
+import AI_1_v2 as AI_1
 
 def Who_Wins(scores):
     """
     Prints the winner, also checks for a tie
     """
+    
+    Tie = False
 
     for i in scores:
         winner_score = 100
@@ -14,13 +14,13 @@ def Who_Wins(scores):
             winner = i
             winner_score = scores[i]
     
-    Tie = False
-    for i in scores:
-        if i == winner:
+    
+    for j in scores:
+        if j == winner:
             continue
-        if scores[i] == winner_score:
+        if scores[j] == winner_score:
             Tie = True
-            winners = (winner, i)
+            winners = (winner, j)
 
     if Tie:
         print(f"Players {winners[0]} and {winners[1]} win the game")
@@ -62,7 +62,7 @@ def Start_Game(num_players):
     Starts game with one User and a variable number of AI players
     """
     scores ={}
-    for i in range(num_players + 1):
+    for i in range(num_players):
         i = str(i)
         scores[i] = 0
 
@@ -86,7 +86,7 @@ def Start_Game(num_players):
             
                 #Check if AI can play and make move
                 if Functions_v2.Can_Play(players, trains, player_num):
-                    AI_1.Make_Move(players, pile, trains, player_num, num_players)
+                    AI_1.Make_Move(players, trains, player_num)
                     pass_tally = 0
                 
                 #Pick up, open train and increment tally
@@ -104,6 +104,9 @@ def Start_Game(num_players):
                 break
 
         scores = Tally_Scores(players, scores)
+        print(f"Scores: {scores}")
+        for train in trains:
+            print(f"{train.name}: {train.store}")
 
     print(f"Scores: {scores}")
     print("Game Over")
