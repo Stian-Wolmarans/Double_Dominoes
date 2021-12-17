@@ -1,9 +1,19 @@
 import Runner_v2
+
 """
-Plays game with a variable number of only AI players
+Simulates games with a variable number of AI players
 """
 
 num_players = int(input("How many players? "))
 
-Runner_v2.Start_Game(num_players)
+player_wins = {}
 
+for player in range(num_players):
+    player_wins[player] = 0
+
+num_games = int(input("How many games do you want to simulate? "))
+
+for i in range(num_games):
+    player_wins[int(Runner_v2.Start_Game(num_players))] += 1
+
+print(f"Player wins: {player_wins}")
