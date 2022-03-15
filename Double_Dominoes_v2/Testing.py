@@ -1,73 +1,94 @@
 import random
 
 
-def Compare_Dominoes(dominoes, root):
+def Compare_Dominoes(hand, root):
     """
     Compares root to all dominoes and returns all matches
     """
+    #matches keeps track of match and also stores the tiles that are avaialble for selection
     matches = []
 
-    if dominoes:
-        for domino in dominoes:
+    if hand:
+        for domino in hand:
             if domino != root and domino != (root[1], root[0]):
                 if domino[1] == root[1]:
-                    new_domino = [(domino[1], domino[0])]
+                    new_domino = (domino[1], domino[0])                    
                     matches.append(new_domino)
-                if domino[0] == root[1]:
-                    new_domino = [domino]
+                elif domino[0] == root[1]:
+                    new_domino = domino
                     matches.append(new_domino)
 
     return matches
 
 
-def Further_Compare(dominoes, matches, final_trains, i):
+def Expand_Sequences(sequences, i):
+    next_sequences = []
+    for sequence in sequences:
+        next_sequences.append(sequence)
+        next_matches = Compare_Dominoes(sequence[1], sequence[0][-1])
+        print(f"Next_Matches: {next_matches}")
+        for match in next_matches:
+            available_hand = []
+            for domino in sequence[1]:
+                if domino != match and domino != (match[1], match[0]):
+                    available_hand.append(domino)
+            paired_match = []
+            for value in sequence[0]:
+                paired_match.append(value)
+            paired_match.append(match)
+            next_sequences.append((paired_match, available_hand))
+
+    i += 1
+    if i < 10:
+        next_sequences = Expand_Sequences(next_sequences, i)
+
+    return next_sequences
+
+
+def Initial_Sequence(matches, hand):
     """
-    Further compares dominoes to pieces that matched the root, does so recursivly
+    Creates list of tuples with one value being the start of a sequence and the second being the available pieces
     """
-    if i < 20:
+    sequences = []
+    for match in matches:
+        #creates new hand of avaiable pieces
+        available_pieces = []
+        for domino in hand:
+            if domino != match and domino != (match[1], match[0]):
+                available_pieces.append(domino)
+        #creates tuple and stores it in sequences list
+        sequences.append(([match], available_pieces))
 
-        next_matches = []
-        
-        for match in matches:
-
-            next_matches = Compare_Dominoes(dominoes, match[0])
-
-            final_trains.append(match)
-
-        i += 1
-
-        Further_Compare(dominoes, next_matches, final_trains, i)
-    
-
-    return final_trains
+    return sequences
 
 
-def Create_Trains(dominoes, root):
+def Create_Sequence(hand):
     """
-    Creates all possible trains given a number of dominoes
-    """
-    final_trains = []
-    matches = Compare_Dominoes(dominoes, root)
-
-    final_trains = Further_Compare(dominoes, matches, final_trains, 0)
-
-    return final_trains
-
-
-def Create_Sequence():
-    """
-    Creates initial list of dominoes
+    Creates lists of possible trains that can be created from hand
     """
     root = (12,12)
-    dominoes = []
-    for i in range(13):
-        for j in range(i, 13):
-            dominoes.append((i,j))
-    random.shuffle(dominoes)
-    dominoes.remove(root)
-    dominoes = dominoes[:22]
-    print(f"Original list: {dominoes}")
-    print(f"Create_Trains(dominoes, root): {Create_Trains(dominoes, root)}")
+    matches = Compare_Dominoes(hand, root)
+    print(f"Matches: {matches}")
+    sequences = Initial_Sequence(matches, hand)
+    print(f"Sequences: {sequences}")
+    next_sequences = Expand_Sequences(sequences, i = 0)
+
+    for object in next_sequences:
+        print("////////////////////////////////////////")
+        print(f"Sequence: {object[0]}")
+        print(f"Avaiable Hand: {object[1]}")
+        print("////////////////////////////////////////")
 
 
-Create_Sequence()
+
+#Create initial hand
+root = (12,12)
+hand = []
+for i in range(13):
+    for j in range(i, 13):
+        hand.append((i,j))
+random.shuffle(hand)
+hand.remove(root)
+hand = hand[:22]
+    
+Create_Sequence(hand)
