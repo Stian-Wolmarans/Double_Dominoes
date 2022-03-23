@@ -5,7 +5,6 @@ def Compare_Dominoes(hand, root):
     """
     Compares root to all dominoes and returns all matches
     """
-    #matches keeps track of match and also stores the tiles that are avaialble for selection
     matches = []
 
     if hand:
@@ -33,19 +32,25 @@ def Expand_Sequences(sequences, i):
     for sequence in sequences:
         if i != 0:
             next_sequences.append(sequence)
-            next_matches = Compare_Dominoes(hand, sequence[-1])
+            new_hand = []
+            for domino in hand:
+                if domino not in sequence and (domino[1], domino[0]) not in sequence:
+                    new_hand.append(domino)
+            next_matches = Compare_Dominoes(new_hand, sequence[-1])
             print(f"Next_Matches: {next_matches}")
-            for match in next_matches:
-                paired_match = []
-                for value in sequence:
-                    paired_match.append(value)
-                paired_match.append(match)
-                next_sequences.append(paired_match)
-        if i == 0:
+            if next_matches:    
+                for match in next_matches:
+                    paired_match = []
+                    for value in sequence:
+                        paired_match.append(value)
+                    paired_match.append(match)
+                    next_sequences.append(paired_match)
+        else:
+            next_sequences.append(hand)
             i += 1
 
     i += 1
-    if i < 100:
+    if i < 20:
         next_sequences = Expand_Sequences(next_sequences, i)
 
     return next_sequences
