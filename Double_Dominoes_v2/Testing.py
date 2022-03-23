@@ -22,24 +22,30 @@ def Compare_Dominoes(hand, root):
 
 
 def Expand_Sequences(sequences, i):
+    """
+    Creates new sequences and extends existing ones
+    """
     next_sequences = []
+    hand = []
+    for value in sequences[0]:
+        hand.append(value)
+    
     for sequence in sequences:
-        next_sequences.append(sequence)
-        next_matches = Compare_Dominoes(sequence[1], sequence[0][-1])
-        print(f"Next_Matches: {next_matches}")
-        for match in next_matches:
-            available_hand = []
-            for domino in sequence[1]:
-                if domino != match and domino != (match[1], match[0]):
-                    available_hand.append(domino)
-            paired_match = []
-            for value in sequence[0]:
-                paired_match.append(value)
-            paired_match.append(match)
-            next_sequences.append((paired_match, available_hand))
+        if i != 0:
+            next_sequences.append(sequence)
+            next_matches = Compare_Dominoes(hand, sequence[-1])
+            print(f"Next_Matches: {next_matches}")
+            for match in next_matches:
+                paired_match = []
+                for value in sequence:
+                    paired_match.append(value)
+                paired_match.append(match)
+                next_sequences.append(paired_match)
+        if i == 0:
+            i += 1
 
     i += 1
-    if i < 10:
+    if i < 100:
         next_sequences = Expand_Sequences(next_sequences, i)
 
     return next_sequences
@@ -50,14 +56,9 @@ def Initial_Sequence(matches, hand):
     Creates list of tuples with one value being the start of a sequence and the second being the available pieces
     """
     sequences = []
+    sequences.append(hand)
     for match in matches:
-        #creates new hand of avaiable pieces
-        available_pieces = []
-        for domino in hand:
-            if domino != match and domino != (match[1], match[0]):
-                available_pieces.append(domino)
-        #creates tuple and stores it in sequences list
-        sequences.append(([match], available_pieces))
+        sequences.append(([match]))
 
     return sequences
 
@@ -75,10 +76,10 @@ def Create_Sequence(hand):
 
     for object in next_sequences:
         print("////////////////////////////////////////")
-        print(f"Sequence: {object[0]}")
-        print(f"Avaiable Hand: {object[1]}")
+        print(f"Sequence: {object}")
         print("////////////////////////////////////////")
 
+    print(len(next_sequences))
 
 
 #Create initial hand
