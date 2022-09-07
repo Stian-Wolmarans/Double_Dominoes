@@ -1,73 +1,42 @@
 import random
+import copy
+from Sequence_Class import Sequence
 
 
-def Compare_Dominoes(hand, root):
+def Compare_Dominoes(hand, last_tile):
     """
-    Compares root to all dominoes and returns all matches
+    Compares last tile to all dominoes and returns all matches
     """
     matches = []
 
     if hand:
         for domino in hand:
-            if domino != root and domino != (root[1], root[0]):
-                if domino[1] == root[1]:
+            if domino != last_tile and domino != (last_tile[1], last_tile[0]):
+                if domino[1] == last_tile[1]:
                     new_domino = (domino[1], domino[0])                    
                     matches.append(new_domino)
-                elif domino[0] == root[1]:
+                elif domino[0] == last_tile[1]:
                     new_domino = domino
                     matches.append(new_domino)
 
     return matches
 
 
-def Expand_Sequences(sequences, i):
-    """
-    Creates new sequences and extends existing ones
-    """
-    next_sequences = []
-    hand = []
-    for value in sequences[0]:
-        hand.append(value)
+def Create_New_Sequences(curr_seq_object, next_matches):
     
-    for sequence in sequences:
-        if i != 0:
-            next_sequences.append(sequence)
-            new_hand = []
-            for domino in hand:
-                if domino not in sequence and (domino[1], domino[0]) not in sequence:
-                    new_hand.append(domino)
-            next_matches = Compare_Dominoes(new_hand, sequence[-1])
-            print(f"Next_Matches: {next_matches}")
-            if next_matches:    
-                for match in next_matches:
-                    paired_match = []
-                    for value in sequence:
-                        paired_match.append(value)
-                    paired_match.append(match)
-                    next_sequences.append(paired_match)
-        else:
-            next_sequences.append(hand)
-            i += 1
-
-    i += 1
-    if i < 20:
-        next_sequences = Expand_Sequences(next_sequences, i)
-
+    next_sequences = []    
+    
+    for match in next_matches:
+        seq_object = copy.deepcopy(curr_seq_object)        
+        seq_object.Set_Last_Tile(match)
+        seq_object.Add_To_Sequence(match)
+        seq_object.Remove_From_Pile(match)
+        next_sequences.append(seq_object)
+        seq_object = 0
+        
     return next_sequences
-
-
-def Initial_Sequence(matches, hand):
-    """
-    Creates list of tuples with one value being the start of a sequence and the second being the available pieces
-    """
-    sequences = []
-    sequences.append(hand)
-    for match in matches:
-        sequences.append(([match]))
-
-    return sequences
-
-
+        
+    
 def Create_Sequence(hand):
     """
     Creates lists of possible trains that can be created from hand
@@ -75,16 +44,42 @@ def Create_Sequence(hand):
     root = (12,12)
     matches = Compare_Dominoes(hand, root)
     print(f"Matches: {matches}")
-    sequences = Initial_Sequence(matches, hand)
-    print(f"Sequences: {sequences}")
-    next_sequences = Expand_Sequences(sequences, i = 0)
-
-    for object in next_sequences:
-        print("////////////////////////////////////////")
-        print(f"Sequence: {object}")
-        print("////////////////////////////////////////")
-
-    print(len(next_sequences))
+    print(" ")
+    print(" ")
+    print(" ")
+    
+    seq_object_1 = Sequence(root, hand)
+    
+    print("_______Orginal Match_______")
+    seq_object_1.Display_Data()
+    print(" ")
+    print(" ")
+    print(" ")
+    
+    Next_Matches = Compare_Dominoes(seq_object_1.pile, seq_object_1.root)
+    
+    print(f"Next_Matches: {Next_Matches}")
+    print(" ")
+    print(" ")
+    print(" ")
+    
+    first_sequences = Create_New_Sequences(seq_object_1, Next_Matches)
+    print(f"new_sequences: {first_sequences}")
+    print(" ")
+    print(" ")
+    print(" ")
+    
+    
+    for sequence in first_sequences:
+        sequence.Display_Data()
+        print(" ")
+        print(" ")
+        print(" ")
+        
+    for sequence in first_sequences:
+        if Compare_Dominoes(sequence.pile, sequence.last):
+            print("Commence next sequence")
+    
 
 
 #Create initial hand
@@ -95,6 +90,6 @@ for i in range(13):
         hand.append((i,j))
 random.shuffle(hand)
 hand.remove(root)
-hand = hand[:22]
+hand = hand[:11]
     
 Create_Sequence(hand)
