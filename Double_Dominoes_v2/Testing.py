@@ -31,6 +31,7 @@ def Create_New_Sequences(curr_seq_object, next_matches):
         seq_object.Set_Last_Tile(match)
         seq_object.Add_To_Sequence(match)
         seq_object.Remove_From_Pile(match)
+        seq_object.Update_Seq_Total()
         next_sequences.append(seq_object)
         seq_object = 0
         
@@ -50,7 +51,7 @@ def Create_Sequence(hand):
     
     seq_object_1 = Sequence(root, hand)
     
-    print("_______Orginal Match_______")
+    print("_______Orginal Sequence Object_______")
     seq_object_1.Display_Data()
     print(" ")
     print(" ")
@@ -75,10 +76,32 @@ def Create_Sequence(hand):
         print(" ")
         print(" ")
         print(" ")
+    
+    level_two_sequences = []
         
     for sequence in first_sequences:
+        
         if Compare_Dominoes(sequence.pile, sequence.last):
-            print("Commence next sequence")
+            level_two_matches = Compare_Dominoes(sequence.pile, sequence.last)    
+            next_lvl_two_seq = Create_New_Sequences(sequence, level_two_matches)
+            
+            for item in next_lvl_two_seq:
+                level_two_sequences.append(item)
+    
+    print("_______________________Level Two Sequences____________________________")
+    print("______________________________________________________________________")
+    print(" ")
+    print(" ")
+    print(" ")     
+      
+    for sequence in level_two_sequences:
+        print(sequence)
+        sequence.Display_Data()
+        print(" ")
+        print(" ")
+        print(" ")     
+                    
+            
     
 
 
