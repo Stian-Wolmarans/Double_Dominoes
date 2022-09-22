@@ -36,12 +36,46 @@ def Create_New_Sequences(curr_seq_object, next_matches):
         seq_object = 0
         
     return next_sequences
+
+
+def Level_Up_Sequences(in_global_sequences, in_current_seqeunces):
+
+        next_level_sequences = []
+        out_global_sequences = []
+        for object in in_global_sequences:
+            out_global_sequences.append(object)
         
-    
+        for sequence in in_current_seqeunces:
+        
+            if Compare_Dominoes(sequence.pile, sequence.last):
+                level_two_matches = Compare_Dominoes(sequence.pile, sequence.last)    
+                next_lvl_two_seq = Create_New_Sequences(sequence, level_two_matches)
+            
+                for item in next_lvl_two_seq:
+                    next_level_sequences.append(item)
+        
+            else:
+                out_global_sequences.append(sequence)
+
+        return out_global_sequences, next_level_sequences
+
+
+def Loop_Function(in_global_sequences, in_sequences):
+    out_global_sequences = copy.deepcopy(in_global_sequences)
+    global_object, next_level = Level_Up_Sequences(in_global_sequences, in_sequences)
+    for object in global_object:
+        out_global_sequences.append(object)
+
+    out_sequences = copy.deepcopy(next_level)
+        
+    return out_sequences, out_global_sequences
+
+
 def Create_Sequence(hand):
     """
     Creates lists of possible trains that can be created from hand
     """
+    global_sequences = []
     root = (12,12)
     matches = Compare_Dominoes(hand, root)
     print(f"Matches: {matches}")
@@ -58,7 +92,9 @@ def Create_Sequence(hand):
     print(" ")
     
     Next_Matches = Compare_Dominoes(seq_object_1.pile, seq_object_1.root)
-    
+    if Next_Matches == None:
+        global_sequences.append(seq_object_1)
+
     print(f"Next_Matches: {Next_Matches}")
     print(" ")
     print(" ")
@@ -70,40 +106,42 @@ def Create_Sequence(hand):
     print(" ")
     print(" ")
     
-    
     for sequence in first_sequences:
         sequence.Display_Data()
         print(" ")
         print(" ")
         print(" ")
-    
-    level_two_sequences = []
-        
-    for sequence in first_sequences:
-        
-        if Compare_Dominoes(sequence.pile, sequence.last):
-            level_two_matches = Compare_Dominoes(sequence.pile, sequence.last)    
-            next_lvl_two_seq = Create_New_Sequences(sequence, level_two_matches)
-            
-            for item in next_lvl_two_seq:
-                level_two_sequences.append(item)
-    
-    print("_______________________Level Two Sequences____________________________")
-    print("______________________________________________________________________")
-    print(" ")
-    print(" ")
-    print(" ")     
-      
-    for sequence in level_two_sequences:
-        print(sequence)
-        sequence.Display_Data()
+
+    global_object, next_level_sequences = Loop_Function(global_sequences, first_sequences)
+    for object in global_object:
+            global_sequences.append(object)
+
+        print("_______________________Next Level Sequences__________________________")
+        print("____________________________________________________________________")
         print(" ")
         print(" ")
         print(" ")     
-                    
-            
-    
 
+        for sequence in next_level_sequences:
+            print(sequence)
+            sequence.Display_Data()
+            print(" ")
+            print(" ")
+            print(" ")
+
+    print("_______________________Global Sequences__________________________")
+    print("____________________________________________________________________")
+    print(" ")
+    print(" ")
+    print(" ")      
+
+    for sequence in global_sequences:
+        sequence.Display_Data()
+        print(" ")
+        print(" ")
+        print(" ")   
+
+                    
 
 #Create initial hand
 root = (12,12)
