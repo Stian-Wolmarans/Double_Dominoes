@@ -48,10 +48,10 @@ def Level_Up_Sequences(in_global_sequences, in_current_seqeunces):
         for sequence in in_current_seqeunces:
         
             if Compare_Dominoes(sequence.pile, sequence.last):
-                level_two_matches = Compare_Dominoes(sequence.pile, sequence.last)    
-                next_lvl_two_seq = Create_New_Sequences(sequence, level_two_matches)
+                next_level_matches = Compare_Dominoes(sequence.pile, sequence.last)    
+                next_lvl_seq = Create_New_Sequences(sequence, next_level_matches)
             
-                for item in next_lvl_two_seq:
+                for item in next_lvl_seq:
                     next_level_sequences.append(item)
         
             else:
@@ -61,7 +61,7 @@ def Level_Up_Sequences(in_global_sequences, in_current_seqeunces):
 
 
 def Loop_Function(in_global_sequences, in_sequences):
-    out_global_sequences = copy.deepcopy(in_global_sequences)
+    out_global_sequences = []
     global_object, next_level = Level_Up_Sequences(in_global_sequences, in_sequences)
     for object in global_object:
         out_global_sequences.append(object)
@@ -91,7 +91,7 @@ def Create_Sequence(hand):
     print(" ")
     print(" ")
     
-    Next_Matches = Compare_Dominoes(seq_object_1.pile, seq_object_1.root)
+    Next_Matches = Compare_Dominoes(seq_object_1.pile, seq_object_1.last)
     if Next_Matches == None:
         global_sequences.append(seq_object_1)
 
@@ -114,7 +114,7 @@ def Create_Sequence(hand):
 
     global_object, next_level_sequences = Loop_Function(global_sequences, first_sequences)
     for object in global_object:
-            global_sequences.append(object)
+        global_sequences.append(object)
 
         print("_______________________Next Level Sequences__________________________")
         print("____________________________________________________________________")
