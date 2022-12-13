@@ -1,16 +1,16 @@
-import Functions_v2
 import random
 
 def Make_Move(players, trains, current_player):
     """
-    Makes random move, selected from all possible moves
+    Makes random move, selected from all possible moves, also checks for "Closed Gate"
     """
     
     player_tiles = players[current_player].tiles
     options = {}
     moves = []
+    Closed_Gate = False
 
-    #checks which train are open or own
+    #checks which trains are open
     for train in trains:
         if train.open or train.name == current_player:
             options[train.name] = train.last_tile
@@ -26,6 +26,8 @@ def Make_Move(players, trains, current_player):
     move = random.choice(moves)
     train = trains[move[0]]
     selected_tile = move[1]
+    if move[1][0] == move[1][1]:
+        Closed_Gate = True
 
     #play tile and flip if needed
     if move[2]:
@@ -38,6 +40,9 @@ def Make_Move(players, trains, current_player):
     
     #remove tiles from players hand
     players[current_player].tiles.remove(selected_tile)
-
-def Create_Sequence():
-    print("Do Something")
+    
+    #returns a bool to "Runner_v2.py"
+    if Closed_Gate:
+        return True, move[0]
+    else:
+        return False, move[0]

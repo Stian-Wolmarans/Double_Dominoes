@@ -1,35 +1,38 @@
 import Functions_v2
 import AI_1_v2 as AI_1
+import copy
 
 def Who_Wins(scores):
     """
-    Prints the winner, also checks for a tie
+    Returns winner, also checks for a tie
     """
+    #check for lowest score
+    tie = False
+    winners = []
+    winner = int(len(scores)+1)
+    check = 1000
+    for player in scores:
+        if scores[player] < check:
+            check = copy.copy(scores[player])
+            winner = player
+    winners.append(winner)
+            
+    #check for possible tie
+    for player in scores:
+        if player != winner:
+            if scores[player] == scores[winner]:
+                winners.append(player)
+                tie = True
     
-    Tie = False
-
-    for i in scores:
-        winner_score = 100
-        if scores[i] < winner_score:
-            winner = i
-            winner_score = scores[i]
-    
-    
-    for j in scores:
-        if j == winner:
-            continue
-        if scores[j] == winner_score:
-            Tie = True
-            winners = (winner, j)
-
-    if Tie:
-        print(f"Players {winners[0]} and {winners[1]} win the game")
-        return winners
+    #show results
+    if tie:
+        print(f"The winners are {winners}")
     else:
-        print(f"Player {winner} won the game")
-        return winner
-
-
+        print(f"Player {winner} wins the game")
+        
+    return winner
+    
+    
 def Game_Over(scores):
     """
     Returns true if a players score goes above 100
@@ -59,7 +62,7 @@ def Tally_Scores(players, scores):
 
 def Start_Game(num_players):
     """
-    Starts game with one User and a variable number of AI players
+    Starts simulation of game with given number of AI's
     """
     scores ={}
     for i in range(num_players):
@@ -86,10 +89,21 @@ def Start_Game(num_players):
             
                 #Check if AI can play and make move
                 if Functions_v2.Can_Play(players, trains, player_num):
-                    AI_1.Make_Move(players, trains, player_num)
+                    
+                    #also checks for "Closed Gate" and runs the procedure for closed gate if needed
+                    #if there are no more tiles to pick up and a gate is closed the scores will be tally and round ended
+                    gated, which_train = AI_1.Make_Move(players, trains, player_num)
+                    if gated:
+                        if Functions_v2.Closed_Gate(players, trains[which_train], player_num, pile, num_players):
+                            scores = Tally_Scores(players, scores)
+                            print("______________________________________ROUND OVER______________________________________")
+                            pass_tally = num_players + 2
+                            round_over = True
+                            break
+                              
                     pass_tally = 0
                 
-                #Pick up, open train and increment tally
+                #If it can't: Pick up, open train and increment tally
                 else:
                     if len(pile.tiles) != 0:
                         Functions_v2.Pick_Up_Tile(players, pile, player_num)
@@ -102,12 +116,18 @@ def Start_Game(num_players):
 
             if round_over:
                 break
-
+            
+        #count and show scores at end of the game    
         scores = Tally_Scores(players, scores)
+        print("______________________________________ROUND OVER______________________________________")
+        
         print(f"Scores: {scores}")
         for train in trains:
             print(f"{train.name}: {train.store}")
 
+    print("_____________________________________________________________________________________")
+    print("______________________________________GAME OVER______________________________________")
+    print("_____________________________________________________________________________________")
     print(f"Scores: {scores}")
     print("Game Over")
     return Who_Wins(scores)

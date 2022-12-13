@@ -2,6 +2,7 @@ import Players_v2 as Players
 import Pile_v2 as Pile
 import Trains_v2 as Trains
 import numpy as np
+import random
 
 def Deal_Tiles(num_players):
     """
@@ -86,6 +87,7 @@ def Closed_Gate(players, gated_train, current_player, pile, num_players):
     """
 
     print(f"/////////////////GATE CLOSED/////////////////")
+    print(f"/////////////////{gated_train.store[-1]}////////////////////")
 
     gate_closed = True
     pass_tally = 0
@@ -93,30 +95,41 @@ def Closed_Gate(players, gated_train, current_player, pile, num_players):
 
     while(gate_closed):
 
-        player_array = players[current_player].tiles
-        player_array = np.hstack(player_array)
+        player_tiles = players[current_player].tiles
+        moves = []
         
-        #evaluate if they can play
-        for q in range(len(player_array)):
-            if train_tile == player_array[q]:
-
-                #since array is flattened need to check if the tile value is on the "left" or "right" of the domino piece
-                #if modulus 2 is 1 then number is on right(array starts at 0), tile needs to be flipped
-                if q % 2 == 1:
-                    gated_train.set_last_tile(player_array[q-1])
-                    gated_train.append_train([[player_array[q],player_array[q-1]]]) 
-                elif q % 2 == 0:
-                    gated_train.set_last_tile(player_array[q+1])
-                    gated_train.append_train([[player_array[q],player_array[q+1]]])
-
-                players[current_player].delete_position(int(q/2))
-
+        #evaluate if they can play        
+        for q in range(len(player_tiles)):
+            if train_tile == player_tiles[q][0]:
                 gate_closed = False
-
-                break
+                tile_to_play = player_tiles[q]
+                flip = False
+                moves.append((tile_to_play, flip))
+            if train_tile == player_tiles[q][1]:
+                gate_closed = False
+                tile_to_play = player_tiles[q]
+                flip = True
+                moves.append((tile_to_play, flip))
+        
+        
+        
+        #play if they can
+        if not gate_closed:
+            
+            #select move out of avaiable options
+            move = random.choice(moves)
+            selected_tile = move[0]
+            
+            if move[1]:
+                gated_train.last_tile = selected_tile[0]
+                new_tile = (selected_tile[1], selected_tile[0])
+                gated_train.store.append(new_tile)
+            else:
+                gated_train.last_tile = selected_tile[1]
+                gated_train.store.append(selected_tile)
         
         #pick up if they couldn't play
-        if gate_closed:
+        if gate_closed and len(pile.tiles) != 0:
             Pick_Up_Tile(players, pile, current_player)
         
         #iterate through all the players
@@ -125,15 +138,17 @@ def Closed_Gate(players, gated_train, current_player, pile, num_players):
         else:
             current_player += 1    
 
-        if pile.check_length == 0:
+        if len(pile.tiles) == 0:
             pass_tally += 1
 
         if pass_tally > (num_players + 1):
             print("/////////////////NO MORE TILES, AND GATE STILL CLOSED/////////////////")
+            print(f"PILE: {pile.tiles}")
             print("////////////////////////////ROUND OVER////////////////////////////////")
             return True
         
-    print("////////////////////////////////////////////////////////////GATE OPENED///////////////////////////////////////////////") 
+    print(f"//////////GATE OPENED, WITH {gated_train.store[-1]}/////////////") 
+    return False
 
 
 def Find_Open_Trains(trains, num_players):
