@@ -1,6 +1,5 @@
 class Sequence:
     def __init__(self, root, pile):
-        self.root = root
         self.pile = pile
         self.last = root
         self.sequence = []
@@ -15,6 +14,7 @@ class Sequence:
         print(f"Last: {self.last}")
         print(f"Sequence: {self.sequence}")
         print(f"Sequence_Total: {self.sequence_total}")
+        print(f"Sequence Length: {len(self.sequence)}")
         
     def Set_Last_Tile(self, tile):
         self.last = tile

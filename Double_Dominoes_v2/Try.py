@@ -1,6 +1,6 @@
-import random
 import copy
 from Sequence_Class import Sequence
+import Functions_v2
 
 
 def Compare_Dominoes(hand, last_tile):
@@ -62,12 +62,13 @@ def Level_Up_Sequences(in_global_sequences, in_current_seqeunces):
         return out_global_sequences, next_level_sequences, exit
 
 
-def Create_Sequences(hand):
+def Create_Sequence(hand, root):
     """
-    Creates list of sequence objects of all possible trains that can be created from hand
+    Creates list of sequence objects of all possible trains that can be created from hand based of root domino,
+    then selects the sequences with the longest length/total value
     """
     global_sequences = []
-    root = (12,12)
+    final_sequences = []
 
     seq_object_1 = Sequence(root, hand)
     
@@ -86,63 +87,50 @@ def Create_Sequences(hand):
         for object in global_objects:
             global_sequences.append(object)
     
-    return global_sequences                    
+    if global_sequences:
+            
+        compare = 0
+        sequences = []
+    
+        for item in global_sequences:
+            if len(item.sequence) >= compare:
+                sequences.append(item)
+                compare = len(item.sequence)
+        for item in sequences:
+            if len(item.sequence) == compare:
+                final_sequences.append(item)
+            
+        values = []
+        
+        for item in final_sequences:
+            values.append(item.sequence_total)
+        max_value = max(values)
+        index = values.index(max_value)
+        
+        return final_sequences[index]
+    
+    else:
+        return None
     
 
 def Make_Move(players, trains, current_player):
     """
-    Makes random move, selected from all possible moves, also checks for "Closed Gate"
+    Makes move using a few basic strategies, explanation on Github
     """
+    #create sequence for own train and store "spares"
+    sequence = Create_Sequence(players[current_player], trains[current_player].store[-1])
+    hand = players[current_player].tiles
+    spares = []
+    for tile in hand:
+        if tile not in sequence.sequence:
+            spares.append(tile)
     
-    player_tiles = players[current_player].tiles
-    options = {}
-    moves = []
-    Closed_Gate = False
-
-    #checks which trains are open
-    for train in trains:
-        if train.open or train.name == current_player:
-            options[train.name] = train.last_tile
+    #check if own train is open, play there first if possible to close it
     
-    #creates list of possible moves and sets flip variable
-    for option in options:
-        for tile in player_tiles:
-            if tile[0] == options[option]:
-                moves.append((option, tile, False))
-            if tile[1] == options[option]:
-                moves.append((option, tile, True))
+    #if own train is closed check other trains and play on other trains with "spare" tiles
 
-    move = random.choice(moves)
-    train = trains[move[0]]
-    selected_tile = move[1]
-    if move[1][0] == move[1][1]:
-        Closed_Gate = True
+#create players, create pile and deal tiles
+pile, players = Functions_v2.Deal_Tiles(5)
 
-    #play tile and flip if needed
-    if move[2]:
-        train.last_tile = selected_tile[0]
-        new_tile = (selected_tile[1], selected_tile[0])
-        train.store.append(new_tile)
-    else:
-        train.last_tile = selected_tile[1]
-        train.store.append(selected_tile)
-    
-    #remove tiles from players hand
-    players[current_player].tiles.remove(selected_tile)
-    
-    #returns a bool to "Runner_v2.py"
-    if Closed_Gate:
-        return True, move[0]
-    else:
-        return False, move[0]
-
-
-#Create initial hand
-root = (12,12)
-hand = []
-for i in range(13):
-    for j in range(i, 13):
-        hand.append((i,j))
-random.shuffle(hand)
-hand.remove(root)
-hand = hand[:11]
+#create train objects: number of AI players + sauce train + user train
+trains = Functions_v2.Create_Trains(5)

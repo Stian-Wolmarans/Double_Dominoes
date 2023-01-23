@@ -1,4 +1,3 @@
-import random
 import copy
 from Sequence_Class import Sequence
 
@@ -21,7 +20,7 @@ def Compare_Dominoes(hand, last_tile):
     return matches
 
 
-def Create_Sequence_Objects(curr_seq_object, next_matches):
+def Create_New_Sequences(curr_seq_object, next_matches):
     
     next_sequences = []    
     
@@ -50,7 +49,7 @@ def Level_Up_Sequences(in_global_sequences, in_current_seqeunces):
             if Compare_Dominoes(sequence.pile, sequence.last):
                 exit = False
                 next_level_matches = Compare_Dominoes(sequence.pile, sequence.last)    
-                next_lvl_seq = Create_Sequence_Objects(sequence, next_level_matches)
+                next_lvl_seq = Create_New_Sequences(sequence, next_level_matches)
             
                 for item in next_lvl_seq:
                     next_level_sequences.append(item)
@@ -61,12 +60,13 @@ def Level_Up_Sequences(in_global_sequences, in_current_seqeunces):
         return out_global_sequences, next_level_sequences, exit
 
 
-def Create_Sequences(hand):
+def Create_Sequence(hand, root):
     """
-    Creates list of sequence objects of all possible trains that can be created from hand
+    Creates list of sequence objects of all possible trains that can be created from hand based of root domino,
+    then selects the sequences with the longest length/total value
     """
     global_sequences = []
-    root = (12,12)
+    final_sequences = []
 
     seq_object_1 = Sequence(root, hand)
     
@@ -74,7 +74,7 @@ def Create_Sequences(hand):
     if Next_Matches == None:
         global_sequences.append(seq_object_1)
     
-    first_sequences = Create_Sequence_Objects(seq_object_1, Next_Matches)    
+    first_sequences = Create_New_Sequences(seq_object_1, Next_Matches)    
     
     global_objects, next_sequences, exit = Level_Up_Sequences(global_sequences, first_sequences)
     for object in global_objects:
@@ -85,4 +85,32 @@ def Create_Sequences(hand):
         for object in global_objects:
             global_sequences.append(object)
     
-    return global_sequences
+    if global_sequences:
+            
+        compare = 0
+        sequences = []
+    
+        for item in global_sequences:
+            if len(item.sequence) >= compare:
+                sequences.append(item)
+                compare = len(item.sequence)
+        for item in sequences:
+            if len(item.sequence) == compare:
+                final_sequences.append(item)
+            
+        values = []
+        
+        for item in final_sequences:
+            values.append(item.sequence_total)
+        max_value = max(values)
+        index = values.index(max_value)
+        
+        return final_sequences[index]
+    
+    else:
+        return None
+    
+    
+
+    
+    

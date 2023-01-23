@@ -111,8 +111,6 @@ def Closed_Gate(players, gated_train, current_player, pile, num_players):
                 flip = True
                 moves.append((tile_to_play, flip))
         
-        
-        
         #play if they can
         if not gate_closed:
             
