@@ -12,7 +12,6 @@ class Train:
         self.last_tile = 12
         self.open = False
         self.store = [(12,12)]
-        self.user = user
 
     def get_status(self):
         return self.open

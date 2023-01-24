@@ -1,8 +1,8 @@
-import Players_v2 as Players
-import Pile_v2 as Pile
-import Trains_v2 as Trains
-import numpy as np
+import Players_Class as Players
+import Pile_Class as Pile
+import Trains_Class as Trains
 import random
+
 
 def Deal_Tiles(num_players):
     """
@@ -27,7 +27,7 @@ def Deal_Tiles(num_players):
 
 def Create_Trains(num_players):
     """
-    Returns list of trains (AI's, User and "Sauce" trains)
+    Returns list of trains (AI's and "Sauce" trains)
     """
     
     trains = []

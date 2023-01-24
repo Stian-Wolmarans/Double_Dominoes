@@ -2,7 +2,8 @@ import random
 
 def Make_Move(players, trains, current_player):
     """
-    Makes random move, selected from all possible moves, also checks for "Closed Gate"
+    Makes random move, selected from all possible moves, 
+    Also checks for "Closed Gate" and returns which train was played on
     """
     
     player_tiles = players[current_player].tiles
@@ -23,6 +24,7 @@ def Make_Move(players, trains, current_player):
             if tile[1] == options[option]:
                 moves.append((option, tile, True))
 
+    #select a random move and set closed_gate bool
     move = random.choice(moves)
     train = trains[move[0]]
     selected_tile = move[1]
@@ -41,8 +43,5 @@ def Make_Move(players, trains, current_player):
     #remove tiles from players hand
     players[current_player].tiles.remove(selected_tile)
     
-    #returns a bool to "Runner_v2.py"
-    if Closed_Gate:
-        return True, move[0]
-    else:
-        return False, move[0]
+    #returns a bool to "Simulator.py" and the train which was played on
+    return Closed_Gate, move[0]

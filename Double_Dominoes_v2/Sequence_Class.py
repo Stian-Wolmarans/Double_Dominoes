@@ -8,7 +8,6 @@ class Sequence:
         
     def Display_Data(self):
         print("...Data...")
-        print(f"Root: {self.root}")
         print(f"Pile: {self.pile}")
         print(f"Pile length: {len(self.pile)}")
         print(f"Last: {self.last}")

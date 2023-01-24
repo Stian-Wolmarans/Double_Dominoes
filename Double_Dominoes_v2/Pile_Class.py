@@ -1,4 +1,4 @@
-import random
+from random import shuffle
 
 class Pile:
     """
@@ -11,7 +11,8 @@ class Pile:
             for i in range(j, 13):
                 self.tiles.append((j,i))
         self.tiles.remove((12,12))
-
+        shuffle(self.tiles)
+    
     
     def Display(self):
         print(self.tiles)
@@ -26,6 +27,7 @@ class Pile:
         del self.tiles[0:11]
         
         return slice
+
 
     def Pick_Up(self):
         """

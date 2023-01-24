@@ -1,5 +1,6 @@
-import Functions_v2
-import AI_1_v2 as AI_1
+import Functions
+import AI_1
+import AI_2
 import copy
 
 def Who_Wins(scores):
@@ -62,7 +63,7 @@ def Tally_Scores(players, scores):
 
 def Start_Game(num_players):
     """
-    Starts simulation of game with given number of AI's
+    Runs simulation of game with given number of AI's
     """
     scores ={}
     for i in range(num_players):
@@ -70,12 +71,14 @@ def Start_Game(num_players):
         scores[i] = 0
 
     while(not Game_Over(scores)):
-            
+        
+        print("______________________________________NEW_ROUND______________________________________")
+        
         #create players, create pile and deal tiles
-        pile, players = Functions_v2.Deal_Tiles(num_players)
-
-        #create train objects: number of AI players + sauce train + user train
-        trains = Functions_v2.Create_Trains(num_players)
+        pile, players = Functions.Deal_Tiles(num_players)
+        
+        #create train objects: number of AI players + sauce train
+        trains = Functions.Create_Trains(num_players)
 
         #variable to stop game if no one can play
         pass_tally = 0
@@ -88,15 +91,19 @@ def Start_Game(num_players):
             for player_num in range(num_players):
             
                 #Check if AI can play and make move
-                if Functions_v2.Can_Play(players, trains, player_num):
+                if Functions.Can_Play(players, trains, player_num):
                     
                     #also checks for "Closed Gate" and runs the procedure for closed gate if needed
                     #if there are no more tiles to pick up and a gate is closed the scores will be tally and round ended
-                    gated, which_train = AI_1.Make_Move(players, trains, player_num)
+                    match player_num:
+                        case 3:
+                            gated, which_train = AI_2.Make_Move(players, trains, player_num)
+                        case 1|2|0|4|5:
+                            gated, which_train = AI_1.Make_Move(players, trains, player_num)
                     if gated:
-                        if Functions_v2.Closed_Gate(players, trains[which_train], player_num, pile, num_players):
+                        if Functions.Closed_Gate(players, trains[which_train], player_num, pile, num_players):
                             scores = Tally_Scores(players, scores)
-                            print("______________________________________ROUND OVER______________________________________")
+                            print("______________________________________ROUND_OVER______________________________________")
                             pass_tally = num_players + 2
                             round_over = True
                             break
@@ -106,12 +113,12 @@ def Start_Game(num_players):
                 #If it can't: Pick up, open train and increment tally
                 else:
                     if len(pile.tiles) != 0:
-                        Functions_v2.Pick_Up_Tile(players, pile, player_num)
+                        Functions.Pick_Up_Tile(players, pile, player_num)
                     trains[player_num].open_train()
                     pass_tally += 1
 
                 #Check if AI is winner
-                if Functions_v2.Is_Round_Winner(players, player_num):
+                if Functions.Is_Round_Winner(players, player_num):
                     round_over = True
 
             if round_over:
@@ -119,14 +126,15 @@ def Start_Game(num_players):
             
         #count and show scores at end of the game    
         scores = Tally_Scores(players, scores)
-        print("______________________________________ROUND OVER______________________________________")
+        print("______________________________________ROUND_OVER______________________________________")
         
+        print("______________________________________SCORES_AND_TRAINS______________________________________")
         print(f"Scores: {scores}")
         for train in trains:
             print(f"{train.name}: {train.store}")
 
     print("_____________________________________________________________________________________")
-    print("______________________________________GAME OVER______________________________________")
+    print("______________________________________GAME_OVER______________________________________")
     print("_____________________________________________________________________________________")
     print(f"Scores: {scores}")
     print("Game Over")
