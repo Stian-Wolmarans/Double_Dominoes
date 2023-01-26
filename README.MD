@@ -20,11 +20,13 @@ Double Dominoes - also known as Mexican Train - is like dominoes with a few adde
 
 - For AI_2 I initially had it prioritize things in this order:
 
-  [1]Close own train if open (tile used would naturally be part of the best sequence)
-  [2]Play on other trains with "spare" pieces, spares being tiles that are not included in the best sequence
-  [3]Play on own train with best sequence
-  [4]Play a sequenced tile elsewhere
+  - [1]Close own train if open (tile used would naturally be part of the best sequence)
+  - [2]Play on other trains with "spare" pieces, spares being tiles that are not included in the best sequence
+  - [3]Play on own train with best sequence
+  - [4]Play a sequenced tile elsewhere
   
-  Playing like this it actually sometimes performed worse than the random AI's and out of a thousand games it never won more than 300(with 5 players) which I repeated   multiple times factoring in for starting position. 
+  Playing like this it actually sometimes performed worse than the random AI's and out of a thousand games it never won more than 300(with 5 players) which I repeated   multiple times factoring in for starting position.
+  
+  I then tried prioritizing building on its own train with sequences and only building on other trains if it had to but this also didn't convincingly beat the random     players. 
   
   
