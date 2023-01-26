@@ -5,6 +5,9 @@ Double Dominoes - also known as Mexican Train - is like dominoes with a few adde
 
 ## TODO
 - Test different prioritizations for AI_2
+- AI_2, Remember which tiles are blocking other players and play those on open trains if possible
+- AI_2, Find a way to play doubles strategically...
+- AI_2, Count which tiles have been played and factor that into play 
 - Add new strategies for AI_2
 - Implement MiniMax for AI_3
 - Look into Neural Networks and other search algorithms
