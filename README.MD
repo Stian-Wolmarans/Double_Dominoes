@@ -18,6 +18,8 @@ Double Dominoes - also known as Mexican Train - is like dominoes with a few adde
 ## Notes
 - I initially decided to use numpy instead of lists to store tiles. I thought the difference in speed would probably be negligable and lists would've been a lot simpler but I wanted to try and get familiar with the library. I only later discovered that numpy is very slow when appending things to an array as it creates a new copy everytime. Lists is also a lot easier to index tiles as a list of tuples can be used, which is what I decided to use in version 2 when making the AI. The idea behind version 2 was to compare the AIs and use lists instead of numpy arrays.
 
+- To compare the AI's I had them initially play 10 000 games after each change I made. Please note that the reason for much of the below is that there might be logical errors in the game simulation, if you find any please let me know.
+
 - For AI_2 I initially had it prioritize things in this order:
 
   - [1]Close own train if open (tile used would naturally be part of the best sequence)
@@ -25,8 +27,5 @@ Double Dominoes - also known as Mexican Train - is like dominoes with a few adde
   - [3]Play on own train with best sequence
   - [4]Play a sequenced tile elsewhere
   
-  Playing like this it actually sometimes performed worse than the random AI's and out of a thousand games it never won more than 300(with 5 players) which I repeated   multiple times factoring in for starting position.
-  
-  I then tried prioritizing building on its own train with sequences and only building on other trains if it had to but this also didn't convincingly beat the random     players. 
-  
+  Playing like this it actually performed worse than the random AI's. I then tried prioritizing building on its own train with sequences and only building on other       trains if it had to but this also didn't convincingly beat the random players. Next I tried adding in a prioritization of playing on the "sauce" train instead of       other players trains (also discarding higher value dominoes first) and this also didn't make a difference. I tried scaling down to 4/3 players and also changing the   game win parementer to a score of 1000 and it still didn't make a difference. A pattern I did notice is that going turn wise from AI_2 the next player always           performed worse than AI_2, and then next players always performed better with the AI that was the most moves after AI_2 always performed the best. Meaning that the     current strategy seems to disrupt the player after it but not improve winning chances overall.
   
