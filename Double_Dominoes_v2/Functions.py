@@ -2,6 +2,7 @@ import Players_Class as Players
 import Pile_Class as Pile
 import Trains_Class as Trains
 import random
+import copy
 
 
 def Deal_Tiles(num_players):
@@ -14,7 +15,7 @@ def Deal_Tiles(num_players):
 
     #create AI players
     for i in range(num_players):
-        players.append(Players.Player(i, False))
+        players.append(Players.Player(i))
 
     #deal tiles to players
     for i in range(num_players):
@@ -43,6 +44,18 @@ def Create_Trains(num_players):
 
     return trains
 
+
+def Is_Anyone_Winner(players):
+    """
+    Checks whether anyone has won the round,
+    The reason for adding this one is so that a check can be made after someone plays out of turn,
+    i.e. After a closed gate
+    """
+    for player in players:
+        if len(player.tiles) == 0:
+            return True
+    
+    return False
 
 def Is_Round_Winner(players, player_num):
     """
@@ -89,60 +102,65 @@ def Closed_Gate(players, gated_train, current_player, pile, num_players):
     print(f"/////////////////GATE CLOSED/////////////////")
     print(f"/////////////////{gated_train.store[-1]}////////////////////")
 
+    first_player = 0
     gate_closed = True
     pass_tally = 0
-    train_tile = gated_train.last_tile
+    player_turns = []
+    starter_iterator = copy.deepcopy(current_player)
+    for j in range(100):
+        for i in range(num_players):
+            player_turns.append(i)
 
     while(gate_closed):
-
-        player_tiles = players[current_player].tiles
-        moves = []
         
-        #evaluate if they can play        
-        for q in range(len(player_tiles)):
-            if train_tile == player_tiles[q][0]:
-                gate_closed = False
-                tile_to_play = player_tiles[q]
-                flip = False
-                moves.append((tile_to_play, flip))
-            if train_tile == player_tiles[q][1]:
-                gate_closed = False
-                tile_to_play = player_tiles[q]
-                flip = True
-                moves.append((tile_to_play, flip))
         
-        #play if they can
-        if not gate_closed:
+        #loop through players
+        player_num = player_turns[starter_iterator]
+            
+        #evaluate if they can play     
+        player_tiles = players[player_num].tiles
+        moves = []   
+        for tile in player_tiles:
+            if tile[0] == gated_train.store[-1][1]:
+                moves.append((tile, False))
+            if tile[1] == gated_train.store[-1][1]:
+                moves.append((tile, True))
+        
+        #if can play
+        if moves:
             
             #select move out of avaiable options
             move = random.choice(moves)
             selected_tile = move[0]
             
+            #play tile and remove from player hand
             if move[1]:
                 gated_train.last_tile = selected_tile[0]
                 new_tile = (selected_tile[1], selected_tile[0])
                 gated_train.store.append(new_tile)
+                players[player_num].tiles.remove(selected_tile)
+                gate_closed = False
             else:
                 gated_train.last_tile = selected_tile[1]
                 gated_train.store.append(selected_tile)
-        
-        #pick up if they couldn't play
-        if gate_closed and len(pile.tiles) != 0:
-            Pick_Up_Tile(players, pile, current_player)
-        
-        #iterate through all the players
-        if current_player == (len(players) - 1):
-            current_player = 0
+                players[player_num].tiles.remove(selected_tile)
+                gate_closed = False
+
+        #if can't play
         else:
-            current_player += 1    
+            if len(pile.tiles) != 0 and first_player != 0:
+                Pick_Up_Tile(players, pile, player_num)
+                pass_tally = 0
+            else:
+                pass_tally += 1 
 
-        if len(pile.tiles) == 0:
-            pass_tally += 1
-
-        if pass_tally > (num_players + 1):
+        starter_iterator += 1
+        first_player += 1
+        
+        if pass_tally > num_players and len(pile.tiles) == 0:
             print("/////////////////NO MORE TILES, AND GATE STILL CLOSED/////////////////")
-            print(f"PILE: {pile.tiles}")
-            print("////////////////////////////ROUND OVER////////////////////////////////")
+            pile.Display()
+            print("////////////////////////////GAME OVER////////////////////////////////")
             return True
         
     print(f"//////////GATE OPENED, WITH {gated_train.store[-1]}/////////////") 

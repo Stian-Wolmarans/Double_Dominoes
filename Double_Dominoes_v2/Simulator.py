@@ -14,7 +14,7 @@ def Who_Wins(scores):
     check = 10000
     for player in scores:
         if scores[player] < check:
-            check = copy.copy(scores[player])
+            check = copy.deepcopy(scores[player])
             winner = player
     winners.append(winner)
             
@@ -40,7 +40,7 @@ def Game_Over(scores):
     """
 
     for i in scores:
-        if scores[i] >= 1000:
+        if scores[i] >= 100:
             return True
 
     return False
@@ -92,12 +92,13 @@ def Start_Game(num_players):
         round_over = False
         
         #loops through turns, stops when no one can play and pile is empty
-        while (len(pile.tiles) != 0 or pass_tally < num_players+2):
+        while (len(pile.tiles) != 0 or pass_tally < num_players + 1):
             
-            #iterates through player numbers to ensure different starting positions
+            #iterates through players
             for index in range(num_players):
                 index += starter_iterator
                 player_num = player_turns[index]
+                
                 
                 #Check if AI can play and make move
                 if Functions.Can_Play(players, trains, player_num):
@@ -116,7 +117,11 @@ def Start_Game(num_players):
                             pass_tally = num_players + 2
                             round_over = True
                             break
-                              
+                    
+                        if Functions.Is_Anyone_Winner(players):
+                            round_over = True
+                            break
+                         
                     pass_tally = 0
                 
                 #If it can't: Pick up, open train and increment tally
@@ -129,11 +134,12 @@ def Start_Game(num_players):
                 #Check if player is winner
                 if Functions.Is_Round_Winner(players, player_num):
                     round_over = True
-                
-            starter_iterator += 1
+                    break
 
             if round_over:
                 break
+        
+        starter_iterator += 1
             
         #count and show scores at end of the game    
         scores = Tally_Scores(players, scores)
@@ -141,8 +147,6 @@ def Start_Game(num_players):
         
         print("______________________________________SCORES_AND_TRAINS______________________________________")
         print(f"Scores: {scores}")
-        for train in trains:
-            print(f"{train.name}: {train.store}")
 
     print("_____________________________________________________________________________________")
     print("______________________________________GAME_OVER______________________________________")
