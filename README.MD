@@ -34,5 +34,4 @@ Double Dominoes - also known as Mexican Train - is like dominoes with a few adde
   
   e.g. --> AI_2 20%, AI_1_1 17%, AI_1_2 25%, AI_1_3 38%
   
-  Meaning that the current strategy seems to disrupt the player after it but not improve winning chances overall.
-  
+  Meaning that the current strategy seems to disrupt the player after it but not improve winning chances overall. I also tried having three AI_2's and only one random   AI and only then did one of the AI_2's manage to score more wins at 27% (the random came in at 26%...), not really significant but shows that it matters what play     style other players are using. 
