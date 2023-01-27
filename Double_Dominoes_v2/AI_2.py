@@ -144,12 +144,11 @@ def Play_Highest_Spare(players, trains, current_player, spares, Gate_Closed):
     sauce_moves = []
     find_max_index = []
     
-    #checks what options there are passes on "moves" to next section, prioritizes options on "sauce" train first
+    #checks what options there are, passes on "moves" to next section, prioritizes options on "sauce" train first
     for train in trains:
         if train.open:
             options[train.name] = train.last_tile
     for option in options:
-        #check below line
         if option == len(trains):
             for tile in spares:
                 if tile[0] == options[option]:
@@ -194,7 +193,7 @@ def Play_Highest_Spare(players, trains, current_player, spares, Gate_Closed):
   
 def Play_Sequence(players, trains, current_player, sequence, Gate_Closed):
     """
-    Play on own train using sequence
+    Play on own train using a sequence
     """
     playable_tile = sequence.sequence[0]
     trains[current_player].last_tile = playable_tile
@@ -210,6 +209,89 @@ def Play_Sequence(players, trains, current_player, sequence, Gate_Closed):
     return Gate_Closed, current_player
 
 
+def Track_All_Played(players, trains, current_player):
+    """ 
+    Tracks all played dominoes and dominoes in hand and deduces what other tiles are still left to be played
+    """
+    known_tiles = []
+    unknown_tiles = []
+    for train in trains:
+        for tile in train.store:
+            known_tiles.append(tile)
+            
+    for tile in players[current_player].tiles:
+        known_tiles.append(tile)
+        
+    for j in range(13):
+        for i in range(j, 13):
+            if (i,j) not in known_tiles:
+                unknown_tiles.append((i,j))
+             
+    return unknown_tiles
+
+
+def Check_Interrupt(trains, current_player, tracked, spares):
+    """ 
+    Checks unknown tiles and compares them with open trains and spares,
+    The pattern it looks for is whether an open train can be played on and whether the resulting domino is unlikely to have any matches
+    It returns a list of "certain" moves which will be played if available, and also a "best" move which could be better than a random spare
+    """
+    certain_moves = []
+    available_moves = []
+    
+    #stores the available options for the current player, excluding own train
+    available_tiles = []
+    for train in trains:
+        if train.name != current_player and train.open == True and train.name != trains[-1].name:
+            available_tiles.append((train.store[-1], train.name))
+    
+    #print(f"Available_tiles: {available_tiles}") 
+    
+    #stores possible moves based off "spare" tiles
+    if available_tiles:
+        for option in available_tiles:
+            for tile in spares:
+                if option[0][1] == tile[0]:
+                    available_moves.append((train.name, tile, tile[1]))
+                if option[0][1] == tile[1]:
+                    available_moves.append((train.name, tile, tile[0]))
+                
+        #print(f"Available_moves: {available_moves}")
+                
+    #from available moves, selects ones which results in no option for continuation
+    if available_moves:
+        for move in available_moves:
+            certain_moves.append(move)
+            for tile in tracked:
+                if tile[0] == move[2] or tile[1] == move[2]:
+                    try:
+                        certain_moves.remove(move)
+                    except:
+                        pass
+                
+        #print(f"Certain_moves: {certain_moves}")
+    
+    return certain_moves
+    
+    
+def Interrupting_Move(players, trains, current_player, input_move, Gate_Closed):
+    """ 
+    Plays an "interrupting" move
+    """
+    playable_tile = input_move[1]
+    trains[input_move[0]].last_tile = playable_tile
+    trains[input_move[0]].store.append(playable_tile)
+    try:
+        players[current_player].tiles.remove(playable_tile)
+    except:
+        flipped_tile = (playable_tile[1],playable_tile[0])
+        players[current_player].tiles.remove(flipped_tile)
+    if playable_tile[0] == playable_tile[1]:
+        Gate_Closed = True  
+    
+    return Gate_Closed, current_player
+    
+    
 def Make_Move(players, trains, current_player):
     """
     Makes move using basic strategy,
@@ -225,6 +307,12 @@ def Make_Move(players, trains, current_player):
         for tile in hand:
             if tile not in sequence.sequence:
                 spares.append(tile)
+                
+    tracked = Track_All_Played(players, trains, current_player)
+    certain_interrupt = Check_Interrupt(trains, current_player, tracked, spares)
+    
+    if certain_interrupt:
+        return Interrupting_Move(players, trains, current_player, certain_interrupt, Gate_Closed)    
     if sequence: 
         return Play_Sequence(players, trains, current_player, sequence, Gate_Closed)
     else:
