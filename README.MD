@@ -20,7 +20,7 @@ Double Dominoes - also known as Mexican Train - is like dominoes with a few adde
 - AI_2 plays somewhat stratigically by building sequences in it's hand and prioritizing where it plays. Currently it will first play on it's own train using a sequence from its hand. Then it will prioritize playing high value tiles on the "sauce" train, as a last resort it will play on other players trains.
 
 ## Notes
-- I initially decided to use numpy instead of lists to store tiles. I thought the difference in speed would probably be negligable and lists would've been a lot simpler but I wanted to try and get familiar with the library. I only later discovered that numpy is very slow when appending things to an array as it creates a new copy everytime. Lists is also a lot easier to index tiles as a list of tuples can be used, which is what I decided to use in version 2 when making the AI. The idea behind version 2 was to compare the AIs and use lists instead of numpy arrays.
+- I initially decided to use numpy instead of lists to store tiles. I thought the difference in speed would probably be negligable and lists would've been a lot simpler but I wanted to try and get familiar with the library. I only later discovered that numpy is very slow when appending things to an array as it creates a new copy everytime. Lists is also a lot easier to index tiles as a list of tuples can be used.
 
 - To compare the AI's I had them initially play 10 000 games after each change I made. For some reason when there are only 2 players the simulation hangs at certain points, haven't looked into why that is, seems like it gets stuck in some loops. 
 
