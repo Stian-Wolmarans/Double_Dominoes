@@ -11,7 +11,7 @@ def Who_Wins(scores):
     tie = False
     winners = []
     winner = int(len(scores)+1)
-    check = 1000
+    check = 10000
     for player in scores:
         if scores[player] < check:
             check = copy.copy(scores[player])
@@ -40,7 +40,7 @@ def Game_Over(scores):
     """
 
     for i in scores:
-        if scores[i] >= 100:
+        if scores[i] >= 1000:
             return True
 
     return False
@@ -65,10 +65,17 @@ def Start_Game(num_players):
     """
     Runs simulation of game with given number of AI's
     """
+    player_turns = []
+    starter_iterator = 0
     scores ={}
     for i in range(num_players):
         i = str(i)
         scores[i] = 0
+        
+    #stores the index for player turns so that each round a different player can start
+    for j in range(100):
+        for i in range(num_players):
+            player_turns.append(i)
 
     while(not Game_Over(scores)):
         
@@ -82,23 +89,25 @@ def Start_Game(num_players):
 
         #variable to stop game if no one can play
         pass_tally = 0
-
         round_over = False
         
-        #loop through rounds, stops when no one can play and pile is empty
+        #loops through turns, stops when no one can play and pile is empty
         while (len(pile.tiles) != 0 or pass_tally < num_players+2):
             
-            for player_num in range(num_players):
-            
+            #iterates through player numbers to ensure different starting positions
+            for index in range(num_players):
+                index += starter_iterator
+                player_num = player_turns[index]
+                
                 #Check if AI can play and make move
                 if Functions.Can_Play(players, trains, player_num):
                     
                     #also checks for "Closed Gate" and runs the procedure for closed gate if needed
                     #if there are no more tiles to pick up and a gate is closed the scores will be tally and round ended
                     match player_num:
-                        case 3:
+                        case 0:
                             gated, which_train = AI_2.Make_Move(players, trains, player_num)
-                        case 1|2|0|4|5:
+                        case 1|2|3:
                             gated, which_train = AI_1.Make_Move(players, trains, player_num)
                     if gated:
                         if Functions.Closed_Gate(players, trains[which_train], player_num, pile, num_players):
@@ -117,9 +126,11 @@ def Start_Game(num_players):
                     trains[player_num].open_train()
                     pass_tally += 1
 
-                #Check if AI is winner
+                #Check if player is winner
                 if Functions.Is_Round_Winner(players, player_num):
                     round_over = True
+                
+            starter_iterator += 1
 
             if round_over:
                 break

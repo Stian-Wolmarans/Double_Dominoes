@@ -34,11 +34,11 @@ def Create_Trains(num_players):
 
     #create n variable number of trains
     for i in range(num_players):
-        trains.append(Trains.Train(i, ("Player "+str(i)), False))
+        trains.append(Trains.Train(i, ("Player "+str(i))))
     
     #create "Sauce"train
     name = num_players
-    trains.append(Trains.Train(name,"Sauce", False))
+    trains.append(Trains.Train(name,"Sauce"))
     trains[num_players].open_train()
 
     return trains

@@ -6,7 +6,7 @@ class Train:
     User is a boolean which determines if the train is that of an AI player or user
     """
 
-    def __init__(self, name, display_name, user):
+    def __init__(self, name, display_name):
         self.name = name
         self.display_name = display_name
         self.last_tile = 12
