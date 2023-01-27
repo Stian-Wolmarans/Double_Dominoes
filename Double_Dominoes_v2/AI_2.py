@@ -1,8 +1,7 @@
-import copy
-from Sequence_Class import Sequence
-import Functions
 import random
-
+import copy
+import Functions
+from Sequence_Class import Sequence
 
 def Compare_Dominoes(hand, last_tile):
     """
@@ -75,53 +74,65 @@ def Level_Up_Sequences(in_global_sequences, in_current_seqeunces):
 def Create_Sequence(hand, root):
     """
     Creates list of sequence objects of all possible trains that can be created from hand based off root domino,
-    Then selects the sequences with the longest length/total_value, 
-    If these values are the same it select ones based on python's max() function,
+    Then selects the sequences with the longest length/total_value,
     Returns None if no matches are possible,
-    Important to note that previous functions flip tiles if needed and these are stored in the correct order,
-    However when removing these tiles from hand the unflipped version needs to be removed (Check Make_Move function)
     """
-    global_sequences = []
-    final_sequences = []
-
+    
+    #set up, creating sequence object, finding matches and creating first set of sequences based off initial object
+    full_sequences = []
     seq_object_1 = Sequence(root, hand)
     
     Next_Matches = Compare_Dominoes(seq_object_1.pile, seq_object_1.last)
     if not Next_Matches:
         return None
-    
     first_sequences = Create_New_Sequences(seq_object_1, Next_Matches)    
-    
-    global_objects, next_sequences, exit = Level_Up_Sequences(global_sequences, first_sequences)
+    global_objects, next_sequences, exit = Level_Up_Sequences(full_sequences, first_sequences)
     for object in global_objects:
-        global_sequences.append(object)
+        full_sequences.append(object)
 
+    #main loop that will build sequences from intitial sequences, this is the function that could be done recursively but haven't figured out how
     while(not exit):
-        global_objects, next_sequences, exit = Level_Up_Sequences(global_sequences, next_sequences)
+        global_objects, next_sequences, exit = Level_Up_Sequences(full_sequences, next_sequences)
         for object in global_objects:
-            global_sequences.append(object)
+            full_sequences.append(object)
     
-    if global_sequences:
-            
-        compare = 0
-        sequences = []
+    #section below selects the longest sequence then chooses the sequence with the highest value tiles, also proritizes a sequence with doubles in it
+    compare = 0
+    sequences = []
+    semifinal_sequences = []
+    for item in full_sequences:
+        if len(item.sequence) >= compare:
+            sequences.append(item)
+            compare = len(item.sequence)
+    for item in sequences:
+        if len(item.sequence) == compare:
+            semifinal_sequences.append(item)
     
-        for item in global_sequences:
-            if len(item.sequence) >= compare:
-                sequences.append(item)
-                compare = len(item.sequence)
-        for item in sequences:
-            if len(item.sequence) == compare:
-                final_sequences.append(item)
-            
-        values = []
-        
-        for item in final_sequences:
-            values.append(item.sequence_total)
-        max_value = max(values)
-        index = values.index(max_value)
-        
-        return final_sequences[index]
+    #finds sequences with the most doubles
+    doubles_compare = 0
+    final_sequences = []
+    for object in semifinal_sequences:
+        count_doubles = 0
+        for tile in object.sequence:
+            if tile[0] == tile[1]:
+                count_doubles += 1
+        if count_doubles >= doubles_compare:
+            doubles_compare = copy.deepcopy(count_doubles)
+            final_sequences.append((object,count_doubles))
+    for object in final_sequences:
+        if object[1] != doubles_compare:
+            final_sequences.remove(object)
+    
+    #finds highest total value
+    values = []
+    for item in final_sequences:
+        values.append(item[0].sequence_total)
+    max_value = max(values)
+    index = values.index(max_value)
+    
+    final_sequence = final_sequences[index][0]
+    
+    return final_sequence
     
 
 def Play_Highest_Spare(players, trains, current_player, spares, Gate_Closed):
@@ -185,7 +196,7 @@ def Play_Sequence(players, trains, current_player, sequence, Gate_Closed):
     """
     Play on own train using sequence
     """
-    playable_tile = sequence.sequence[1]
+    playable_tile = sequence.sequence[0]
     trains[current_player].last_tile = playable_tile
     trains[current_player].store.append(playable_tile)
     try:

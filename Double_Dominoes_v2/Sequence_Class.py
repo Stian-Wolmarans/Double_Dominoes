@@ -2,8 +2,8 @@ class Sequence:
     def __init__(self, root, pile):
         self.pile = pile
         self.last = root
+        self.root = root
         self.sequence = []
-        self.sequence.append(root)
         self.sequence_total = 0
         
     def Display_Data(self):
