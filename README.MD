@@ -30,5 +30,9 @@ Double Dominoes - also known as Mexican Train - is like dominoes with a few adde
   - [3]Play on own train with best sequence
   - [4]Play a sequenced tile elsewhere
   
-  Playing like this it actually performed worse than the random AI's. I then tried prioritizing building on its own train with sequences and only building on other       trains if it had to but this also didn't convincingly beat the random players. Next I tried adding in a prioritization of playing on the "sauce" train instead of       other players trains (also discarding higher value dominoes first) and this also didn't make a difference. I tried scaling down to 4/3 players and also changing the   game win parementer to a score of 1000 and it still didn't make a difference. A pattern I did notice is that going turn wise from AI_2 the next player always           performed worse than AI_2, and then next players always performed better with the AI that was the most moves after AI_2 always performed the best. Meaning that the     current strategy seems to disrupt the player after it but not improve winning chances overall.
+  Playing like this it actually performed worse than the random AI's. I then tried prioritizing building on its own train with sequences and only building on other       trains if it had to but this also didn't convincingly beat the random players. Next I tried adding in a prioritization of playing on the "sauce" train instead of       other players trains (also discarding higher value dominoes first) and this also didn't make a difference. I tried scaling down to 4/3 players and also changing the   game win parementer to a score of 1000 and it still didn't make a difference. A pattern I did notice is that going turn wise from AI_2 the next player always           performed worse than AI_2, and then next players always performed better with the AI that was the most moves after AI_2 always performed the best. 
+  
+  e.g. --> AI_2 20%, AI_1_1 17%, AI_1_2 25%, AI_1_3 38%
+  
+  Meaning that the current strategy seems to disrupt the player after it but not improve winning chances overall.
   
