@@ -18,6 +18,8 @@ Double Dominoes - also known as Mexican Train - is like dominoes with a few adde
 ## Notes
 - I initially decided to use numpy instead of lists to store tiles. I thought the difference in speed would probably be negligable and lists would've been a lot simpler but I wanted to try and get familiar with the library. I only later discovered that numpy is very slow when appending things to an array as it creates a new copy everytime. Lists is also a lot easier to index tiles as a list of tuples can be used.
 
+- There are various comments which can be uncommented to give print outs of what happens when the simulation runs.
+
 - To compare the AI's I had them initially play 10 000 games after each change I made. For some reason when there are only 2 players the simulation hangs at certain points, haven't looked into why that is, seems like it gets stuck in some loops. 
 
 - With basic strategy AI_2 wins 32% of the time against three other AI_1 players which is somewhat above the random distribution of 25%. Against 5 other AI_1 players it won 20% (16% random distribution), against 2 other AI_1's it won 47% (33% random distribution) and against only 1 AI_1 it won 70% of the time.
