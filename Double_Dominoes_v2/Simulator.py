@@ -73,7 +73,7 @@ def Start_Game(num_players):
         scores[i] = 0
         
     #stores the index for player turns so that each round a different player can start
-    for j in range(100):
+    for j in range(1000):
         for i in range(num_players):
             player_turns.append(i)
 
@@ -108,7 +108,7 @@ def Start_Game(num_players):
                     match player_num:
                         case 0:
                             gated, which_train = AI_2.Make_Move(players, trains, player_num)
-                        case 1|2|3:
+                        case 1|2|3|4|5:
                             gated, which_train = AI_1.Make_Move(players, trains, player_num)
                     if gated:
                         if Functions.Closed_Gate(players, trains[which_train], player_num, pile, num_players):
@@ -135,7 +135,14 @@ def Start_Game(num_players):
                 if Functions.Is_Round_Winner(players, player_num):
                     round_over = True
                     break
-
+                """
+                for train in trains:
+                    print(f"Train {train.name}: {train.store}")
+                print("HANDS...")
+                for player in players:
+                    print(f"Player {player.name}: {player.tiles}")
+                """
+                
             if round_over:
                 break
         
@@ -147,7 +154,13 @@ def Start_Game(num_players):
         
         print("______________________________________SCORES_AND_TRAINS______________________________________")
         print(f"Scores: {scores}")
-
+        """
+        for train in trains:
+            print(f"Train {train.name}: {train.store}")
+        print("HANDS...")
+        for player in players:
+            print(f"Player {player.name}: {player.tiles}")
+        """
     print("_____________________________________________________________________________________")
     print("______________________________________GAME_OVER______________________________________")
     print("_____________________________________________________________________________________")

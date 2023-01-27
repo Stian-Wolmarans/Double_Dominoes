@@ -99,15 +99,15 @@ def Closed_Gate(players, gated_train, current_player, pile, num_players):
     When a double is played, play is stopped until a player can "open" the train by playing on the double
     """
 
-    print(f"/////////////////GATE CLOSED/////////////////")
-    print(f"/////////////////{gated_train.store[-1]}////////////////////")
+    #print(f"/////////////////GATE CLOSED/////////////////")
+    #print(f"/////////////////{gated_train.store[-1]}////////////////////")
 
     first_player = 0
     gate_closed = True
     pass_tally = 0
     player_turns = []
     starter_iterator = copy.deepcopy(current_player)
-    for j in range(100):
+    for j in range(1000):
         for i in range(num_players):
             player_turns.append(i)
 
@@ -158,12 +158,12 @@ def Closed_Gate(players, gated_train, current_player, pile, num_players):
         first_player += 1
         
         if pass_tally > num_players and len(pile.tiles) == 0:
-            print("/////////////////NO MORE TILES, AND GATE STILL CLOSED/////////////////")
+            #print("/////////////////NO MORE TILES, AND GATE STILL CLOSED/////////////////")
             pile.Display()
-            print("////////////////////////////GAME OVER////////////////////////////////")
+            #print("////////////////////////////GAME OVER////////////////////////////////")
             return True
         
-    print(f"//////////GATE OPENED, WITH {gated_train.store[-1]}/////////////") 
+    #print(f"//////////GATE OPENED, WITH {gated_train.store[-1]}/////////////") 
     return False
 
 
