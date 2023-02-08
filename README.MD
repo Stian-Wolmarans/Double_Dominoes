@@ -31,3 +31,5 @@ Double Dominoes - also known as Mexican Train - is like dominoes with a few adde
 - I initially decided to use numpy instead of lists to store tiles. I thought the difference in speed would probably be negligable and lists would've been a lot simpler but I wanted to try and get familiar with the library. I only later discovered that numpy is very slow when appending things to an array as it creates a new copy everytime. Lists is also a lot easier to index tiles as a list of tuples can be used.
 
 - To compare the AI's I had them initially play 10 000 games after each change I made. For some reason when there are only 2 players the simulation hangs at certain points, haven't looked into why that is, seems like it gets stuck in some loops.
+
+- The sequence creator functions are a bit of a mess but it seems to work and don't think it's worth optimizing as it doesn't seem to significantly slow the program.
