@@ -11,17 +11,17 @@ Double Dominoes - also known as Mexican Train - is like dominoes with a few adde
 ## The AI
 ### AI_1 
 - Plays randomly. I did this to create a benchmark to compare with.
-# AI_2 
+### AI_2 
 - Plays somewhat stratigically by building sequences in it's hand and prioritizing where it plays. Firstly it will check for "Interrupting Moves", a move that limits other players ability to play (currently it only calls this function if the move would mean other players can't play at all, I also played around with playing tiles that somewhat limit other player moves but after running some simulations noticed it barely made a difference since it is only until the last few turns when this tactic actually makes a difference and if it takes priority over the sequence moves then it doesn't improve winning chances). Next it prioritizes playing on it's own train using a sequence from its hand (The "best" sequence is selected from all possible generated sequences, the chosen sequence factors in sequence length, amount of doubles in sequence and the total value of all the tiles in the sequence). Then it will prioritize playing high value tiles on the "sauce" train, and as a last resort it will play on other players trains.
 
 ## Program Structure
-# "Main.py" --imports--> "Simulator.py"
+### "Main.py" --imports--> "Simulator.py"
 - Main allows for changing number of players and inputing the number of simulations to run. It also keeps track of player wins as that is what Simulator returns.
 
-# "Simulator.py" --imports--> "Functions.py", "AI_'1|2|3|4'.py" (AI_2 imports the seqeuence class to store sequence objects)
+### "Simulator.py" --imports--> "Functions.py", "AI_'1|2|3|4'.py" (AI_2 imports the seqeuence class to store sequence objects)
 - "Simulator.py" has various functions to keep track of scores and has the Start_Game() function which will run one game through it's rounds. It calls various functions from "Functions.py" and the AI files. Simulator accounts for things like rotating player turns, checking for game end conditions, checking for closed gates and other basics for gameplay to work. Note that there is a match case used in Start_Game() by which it is possible to select which AI will use what method of play. It also has various comments which can be uncommented to print data to the console.
 
-# "Functions.py" ----> Classes (Players, Pile, Trains)
+### "Functions.py" ----> Classes (Players, Pile, Trains)
 - Functions uses these classes and iniates them when caleld by the simulator so the data is all passed through and "Simulator.py" doesn't need to import any classes. When calling the Closed_Gate() and calling the AI moves all the data is passed into those functions and returned back to simulator, there is probably a way to access the data in a more efficient way.
 
 ## Results
