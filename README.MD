@@ -9,7 +9,7 @@ Double Dominoes - also known as Mexican Train - is like dominoes with a few adde
 
 
 ## The AI
-# AI_1 
+### AI_1 
 - Plays randomly. I did this to create a benchmark to compare with.
 # AI_2 
 - Plays somewhat stratigically by building sequences in it's hand and prioritizing where it plays. Firstly it will check for "Interrupting Moves", a move that limits other players ability to play (currently it only calls this function if the move would mean other players can't play at all, I also played around with playing tiles that somewhat limit other player moves but after running some simulations noticed it barely made a difference since it is only until the last few turns when this tactic actually makes a difference and if it takes priority over the sequence moves then it doesn't improve winning chances). Next it prioritizes playing on it's own train using a sequence from its hand (The "best" sequence is selected from all possible generated sequences, the chosen sequence factors in sequence length, amount of doubles in sequence and the total value of all the tiles in the sequence). Then it will prioritize playing high value tiles on the "sauce" train, and as a last resort it will play on other players trains.
