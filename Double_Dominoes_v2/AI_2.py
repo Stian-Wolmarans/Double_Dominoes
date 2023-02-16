@@ -1,6 +1,4 @@
-import random
 import copy
-import Functions
 from Sequence_Class import Sequence
 
 def Compare_Dominoes(hand, last_tile):

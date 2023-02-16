@@ -99,17 +99,16 @@ def Start_Game(num_players):
                 index += starter_iterator
                 player_num = player_turns[index]
                 
-                
                 #Check if AI can play and make move
                 if Functions.Can_Play(players, trains, player_num):
                     
                     #also checks for "Closed Gate" and runs the procedure for closed gate if needed
                     #if there are no more tiles to pick up and a gate is closed the scores will be tally and round ended
-                    match player_num:
-                        case 0:
-                            gated, which_train = AI_2.Make_Move(players, trains, player_num)
-                        case 1|2|3|4|5:
-                            gated, which_train = AI_1.Make_Move(players, trains, player_num)
+                    #would use match but only suppurted in python 3.10 and "anytree" is only support till python 3.8
+                    if player_num == 0 or player_num == 2:
+                        gated, which_train = AI_1.Make_Move(players, trains, player_num)
+                    elif player_num == 1:
+                        gated, which_train = AI_2.Make_Move(players, trains, player_num)
                     if gated:
                         if Functions.Closed_Gate(players, trains[which_train], player_num, pile, num_players):
                             scores = Tally_Scores(players, scores)

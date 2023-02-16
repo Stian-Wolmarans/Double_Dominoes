@@ -5,7 +5,7 @@ Simulates games with a variable number of AI players
 """
 
 player_wins = {}
-num_players = 4
+num_players = 3
 
 for player in range(num_players):
     player_wins[player] = 0
