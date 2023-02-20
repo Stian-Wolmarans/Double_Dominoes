@@ -3,32 +3,39 @@ from itertools import chain
 
 class Node:
     
-    def __init__ (self, evaluation, board, current_player, move, depth, children = None):
-        self.evaluation = evaluation
+    def __init__ (self, board, current_player, parent_node = None):
+        self.score = 0
         self.board = board
+        self.best = None
         self.current_player = current_player
-        self.move = move
         self.children = []
-        self.depth = depth
-      
+        self.parent = parent_node
+        self.evaluation = self.Evaluate_Board()
+
     
     def add_child(self, node):
         assert isinstance(node, Node)
         self.children.append(node) 
+        
+    
+    def set_best(self, best):
+        self.best = best
+        
+        
+    def remove_node(self, node):
+        for child in self.children:
+            if child == node:
+                self.children.remove(node)
     
     
     def __iter__(self):
         for object in chain.from_iterable(self.children):
             yield object
         yield self
-        
-    
-    def next_node(self):
-        return self.__iter__()
-        
+               
         
     def display_data(self):
-        print(f"Evaluations: {self.evaluation} Move: {self.move}")
+        print(f"Evaluations: {self.evaluation} Score: {self.score}")
     
     
     def Give_Options(self):
@@ -55,8 +62,8 @@ class Node:
                     moves.append((option, tile, True))
                     
         return moves  
-
-    
+        
+        
     def Rotate_Player(self):
         """ 
         Rotates player
@@ -92,7 +99,7 @@ class Node:
     def Evaluate_Board(self):
         """ 
         Evaluates the board and assigns a score to it based of the current players hand, and what is already played
-        Evaluation is stored in player order
+        Evaluation is stored in player order and scores are in the negative ranging to 0
         Parameter for board in format (trains, players)
         """
         evaluations = [0,0,0]
@@ -105,7 +112,7 @@ class Node:
             for tile in hand:
                 sum_hand += tile[0]
                 sum_hand += tile[1]
-            evaluations[current_player] = sum_hand
+            evaluations[current_player] = int(sum_hand)
         else:
             played_sum = 24
             played_count = 1
@@ -119,7 +126,7 @@ class Node:
             un_played_count = 91 - played_count
             average_piece_value = (1080-played_sum)/un_played_count
             sum_hand = len(self.board[1][current_player].tiles)*average_piece_value
-            evaluations[current_player] = sum_hand
+            evaluations[current_player] = int(sum_hand)
         
         #rotation to store evlautions in the correct order
         if current_player == 0:
@@ -152,11 +159,13 @@ class Node:
         lefts_average = len(left_hand)*average_piece_value
         right_eval = int(1080 - pile_average - played_sum - lefts_average - sum_hand)
         left_eval = int(1080 - pile_average - played_sum - rights_average - sum_hand)
-        evaluations[left_player] = left_eval
-        evaluations[right_player] = right_eval
+        evaluations[left_player] = int(left_eval)
+        evaluations[right_player] = int(right_eval)
         
-        return evaluations
-
+        self.score = sum_hand/(sum_hand + left_eval + right_eval)
+        
+        return evaluations       
+            
 
     def Create_Children_Nodes(self):
         """ 
@@ -167,8 +176,7 @@ class Node:
         
         for move in moves:
             board, next_player = self.New_State(move)
-            depth = self.depth + 1
-            next_node = Node(self.Evaluate_Board(), board, next_player, move, depth)
+            next_node = Node(board, next_player, parent_node = self)
             children.append(next_node)
             
         return children
