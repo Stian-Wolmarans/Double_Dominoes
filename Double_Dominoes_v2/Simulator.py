@@ -104,7 +104,7 @@ def Start_Game(num_players):
                     
                     #also checks for "Closed Gate" and runs the procedure for closed gate if needed
                     #if there are no more tiles to pick up and a gate is closed the scores will be tally and round ended
-                    #would use match but only suppurted in python 3.10 and "anytree" is only support till python 3.8
+                    #could use match case here but doesn't really matter
                     if player_num == 0 or player_num == 2:
                         gated, which_train = AI_1.Make_Move(players, trains, player_num)
                     elif player_num == 1:

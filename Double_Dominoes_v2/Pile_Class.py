@@ -36,6 +36,5 @@ class Pile:
         piece, self.tiles = self.tiles[-1], self.tiles[:-1]
         return piece
 
-
     
 

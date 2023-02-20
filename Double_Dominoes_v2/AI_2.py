@@ -287,7 +287,7 @@ def Interrupting_Move(players, trains, current_player, input_move, Gate_Closed):
     if playable_tile[0] == playable_tile[1]:
         Gate_Closed = True  
     
-    return Gate_Closed, current_player
+    return Gate_Closed, input_move[0]
     
     
 def Make_Move(players, trains, current_player):

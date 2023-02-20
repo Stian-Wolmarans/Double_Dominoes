@@ -1,76 +1,6 @@
 import Functions
 from Node_Class import Node
-import sys
 import copy
-import AI_1
-
-
-def Evaluate_Board(board, current_player):
-    """ 
-    Evaluates the board and assigns a score to it based of the current players hand, and what is already played
-    Evaluation is stored in player order and scores are in the negative ranging to 0
-    Parameter for board in format (trains, players)
-    """
-    evaluations = [0,0,0]
-    
-    #determining value of players hand
-    if current_player == 0:
-        sum_hand = 0
-        hand = board[1][current_player].tiles
-        for tile in hand:
-            sum_hand += tile[0]
-            sum_hand += tile[1]
-        evaluations[current_player] = sum_hand
-    else:
-        played_sum = 24
-        played_count = 1
-        for train in board[0]:
-            for tile in train.store:
-                if tile == (12,12):
-                    continue
-                played_sum += tile[0]
-                played_sum += tile[1]
-                played_count += 1
-        un_played_count = 91 - played_count
-        average_piece_value = (1080-played_sum)/un_played_count
-        sum_hand = len(board[1][current_player].tiles)*average_piece_value
-        evaluations[current_player] = sum_hand
-    
-    #rotation to store evlautions in the correct order
-    if current_player == 0:
-        left_player = 2
-        right_player = 1
-    elif current_player == 1:
-        left_player = 0
-        right_player = 2
-    else:
-        left_player = 1
-        right_player = 0
-    left_hand = board[1][left_player].tiles
-    right_hand = board[1][right_player].tiles
-        
-    #calculating evaluations of opponents
-    played_sum = 24
-    played_count = 1
-    for train in board[0]:
-        for tile in train.store:
-            if tile == (12,12):
-                continue
-            played_sum += tile[0]
-            played_sum += tile[1]
-            played_count += 1
-    un_played_count = 91 - played_count
-    average_piece_value = (1080-played_sum)/un_played_count
-    pile_count = 91 - played_count - len(board[1][current_player].tiles) - len(left_hand) - len(right_hand)
-    pile_average = average_piece_value*pile_count
-    rights_average = len(right_hand)*average_piece_value
-    lefts_average = len(left_hand)*average_piece_value
-    right_eval = int(1080 - pile_average - played_sum - lefts_average - sum_hand)
-    left_eval = int(1080 - pile_average - played_sum - rights_average - sum_hand)
-    evaluations[left_player] = left_eval
-    evaluations[right_player] = right_eval
-    
-    return evaluations  
 
  
 def Terminal(node):
@@ -125,14 +55,15 @@ def Speculative_Pruning(node, p_node_score, gp_node_score):
         if child_node != node:    
               
             #gate one cleaning input
+            #had to do this as the comparison opperators don't work on nonetype objects
             if node.parent.best == None:
                 gate_one_checkA = 0
             else:
-                gate_one_checkA = node.parent.best[:]
+                gate_one_checkA = copy.deepcopy(node.parent.best)
             if p_node_score == None:
                 gate_one_checkB = 0
             else:
-                gate_one_checkB = p_node_score
+                gate_one_checkB = copy.deepcopy(p_node_score)
             
             #gate one                     
             if (gate_one_checkA <= gate_one_checkB):
@@ -157,62 +88,75 @@ def Speculative_Pruning(node, p_node_score, gp_node_score):
             if gp_node_score == None:
                 gp_clean = 0
             else:
-                gp_clean = gp_node_score
+                gp_clean = copy.deepcopy(gp_node_score)
             if p_node_score == None:
                 p_clean = 0
             else:
-                p_clean = p_node_score
+                p_clean = copy.deepcopy(p_node_score)
             if best == None:
                 best_clean = 0
             else:
-                best_clean = best
+                best_clean = copy.deepcopy(best)
             
             #gate three          
-            if gp_clean + p_clean + best_clean > 0.9:
-                return None
-    
+            if gp_clean + p_clean + best_clean > 0.9550072568940493:
+                return None    
+            
     return best
 
-    
-def Make_Move(players, trains):
+
+def Find_Best_Move(players, trains, current_player):
     """ 
-    Calls Max^N Algorithm and builds initial nodes
-    """
-    root = Node((trains, players), 0)
-
-    if Functions.Can_Play(players, trains, 0):
-        AI_1.Make_Move(players, trains, 0)
-
-    next_node = Node((trains, players), 1, root)
-    root.add_child(next_node) 
-
-    if Functions.Can_Play(players, trains, 1):
-        AI_1.Make_Move(players, trains, 1)  
+    Calls the search alogrithm and deduces the correct path, note this can only be done after the first round of play
+    """ 
+    #setup
+    board = (trains, players)
+    starting_node = Node(board, current_player)
+    moves = starting_node.Give_Options()
+    choose_from = []
+    
+    #run speculative algorithm for each possible move
+    for move in moves:
+        board, next_player = starting_node.New_State(move)
+        node_to_feed = Node(board, next_player, starting_node)
+        choose_from.append((Speculative_Pruning(node_to_feed, None, None), move))
+    
+    #pick move with lowest value
+    find_min = []
+    for value in choose_from:
+        find_min.append(value)
+    lowest = min(find_min)
+    index = find_min.index(lowest)
+    chosen_move = choose_from[index][1]
+    
+    return chosen_move  
+    
+    
+def Make_Move(players, trains, current_player):
+    
+    Closed_Gate = False
+    move = Find_Best_Move(players, trains, current_player)
+    if move[1][0] == move[1][1]:
+        Closed_Gate = True
+    
+    #play tile and flip if needed
+    if len(move) == 3:
+        if move[2]:
+            trains[move[0]].last_tile = move[1][0]
+            new_tile = (move[1][1], move[1][0])
+            trains[move[0]].store.append(new_tile)
+        else:
+            trains[move[0]].last_tile = move[1][1]
+            trains[move[0]].store.append(move[1])
         
-    next_node_2 = Node((trains, players), 2, next_node)
-    next_node.add_child(next_node)
-    
-    if Functions.Can_Play(players, trains, 2):
-        AI_1.Make_Move(players, trains, 2) 
+        #remove tiles from players hand
+        players[current_player].tiles.remove(move[1])
+
+        return Closed_Gate, move[0]
         
-    starting_node = Node((trains, players), 0, next_node_2)
-    next_node_2.add_child(starting_node)
+    else:
+        return Closed_Gate, move[0]
     
-    print(f"next_node_2.score: {next_node_2.score} next_node.score: {next_node.score}")
-    for train in trains:
-        print(train.store)
-    best_path = Speculative_Pruning(starting_node, next_node_2.score, next_node.score)
     
-    print(best_path)
-
-sys.setrecursionlimit(1000000000)
-
-#create players, create pile and deal tiles
-pile, players = Functions.Deal_Tiles(3)
-
-#create train objects: number of AI players + sauce train
-trains = Functions.Create_Trains(3)
-
-Make_Move(players, trains)
 
 
