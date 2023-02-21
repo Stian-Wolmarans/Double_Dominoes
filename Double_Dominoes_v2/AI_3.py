@@ -5,11 +5,11 @@ import copy
  
 def Terminal(node):
     """ 
-    Returns True or False based on whether game is over, board is a tuple of trains and players
+    Returns True or False based on whether game is over
     """
     #checks if any player hands are empty, then game is over
     for i in range(3):
-        if node.board[1][i] == 0:
+        if len(node.board[1][i].tiles) == 0:
             return True
     
     #check how many tiles have been played and how much are in hand
@@ -35,107 +35,101 @@ def Terminal(node):
     return False
     
         
-def Speculative_Pruning(node, p_node_score, gp_node_score):
+def Speculative_Pruning(node, p_node_best, gp_node_best):
     """ 
     Algorithm similar to Max^N but with some pruning applied
     """
     best = None
     spec_pruned = []
     
-    children = node.Create_Children_Nodes()
-    for child in children:
-        node.add_child(child)    
+    #print("---------------ENTER-----------------")    
     
     if Terminal(node):
+        #print("---------------TERMINAL-----------------")
         return node.score
     
-    nodes = node.__iter__()
+    children = node.Create_Children_Nodes()
+    for child in children:
+        node.add_child(child)
     
-    for child_node in nodes:
-        if child_node != node:    
-              
-            #gate one cleaning input
-            #had to do this as the comparison opperators don't work on nonetype objects
-            if node.parent.best == None:
-                gate_one_checkA = 0
-            else:
-                gate_one_checkA = copy.deepcopy(node.parent.best)
-            if p_node_score == None:
-                gate_one_checkB = 0
-            else:
-                gate_one_checkB = copy.deepcopy(p_node_score)
+    for child_node in node.children: 
+        
+        #gate one  
+        #("---------------GATE ONE-----------------")  
+        if node.parent.best and p_node_best:                    
+            if (node.parent.best <= p_node_best):
+                result = Speculative_Pruning(child_node, best, p_node_best)
+        else:
+            result = Speculative_Pruning(child_node, best, 0)
             
-            #gate one                     
-            if (gate_one_checkA <= gate_one_checkB):
-                result = Speculative_Pruning(child_node, best, p_node_score)
-            else:
-                result = Speculative_Pruning(child_node, best, 0)
-                
-            #gate two
-            if (best == None):
-                best = copy.deepcopy(result)
-                node.set_best(best)
-            elif (result == None):
-                spec_pruned.append(child_node)
-            elif (best < result):
-                best = copy.deepcopy(result)
-                node.set_best(best)
-                if (node.parent.best > p_node_score):
+        #gate two
+        #print("---------------GATE TWO-----------------")
+        if not best:
+            best = copy.copy(result)
+            node.set_best(best)
+        elif not result:
+            spec_pruned.append(child_node)
+        elif (best < result):
+            best = copy.copy(result)
+            node.set_best(best)
+            if node.parent.best and p_node_best:
+                if (node.parent.best > p_node_best):
                     for spec_node in spec_pruned:
                         node.add_child(spec_node)
-            
-            #gate three cleaning input
-            if gp_node_score == None:
-                gp_clean = 0
-            else:
-                gp_clean = copy.deepcopy(gp_node_score)
-            if p_node_score == None:
-                p_clean = 0
-            else:
-                p_clean = copy.deepcopy(p_node_score)
-            if best == None:
-                best_clean = 0
-            else:
-                best_clean = copy.deepcopy(best)
-            
-            #gate three          
-            if gp_clean + p_clean + best_clean > 0.9550072568940493:
-                return None    
+
+        #gate three cleaning input
+        if not gp_node_best:
+            gp_clean = 0
+        else:
+            gp_clean = copy.copy(gp_node_best)
+        if not p_node_best:
+            p_clean = 0
+        else:
+            p_clean = copy.copy(p_node_best)
+        if not best:
+            best_clean = 0
+        else:
+            best_clean = copy.copy(best)
+        
+        #gate three 
+        #print("---------------GATE THREE-----------------")         
+        if (gp_clean + p_clean + best_clean > 1):
+            return None    
             
     return best
 
 
-def Find_Best_Move(players, trains, current_player):
+def Find_Best_Move(players, trains, pile, current_player):
     """ 
     Calls the search alogrithm and deduces the correct path, note this can only be done after the first round of play
     """ 
     #setup
-    board = (trains, players)
-    starting_node = Node(board, current_player)
-    moves = starting_node.Give_Options()
-    choose_from = []
+    board = (trains, players, pile)
+    root = Node(board, current_player)
+    first_child = Node(board, current_player, root)
+    root.add_child(first_child)
     
-    #run speculative algorithm for each possible move
+    #go through moves
+    choose_from = []
+    moves = first_child.Give_Options()
     for move in moves:
-        board, next_player = starting_node.New_State(move)
-        node_to_feed = Node(board, next_player, starting_node)
-        choose_from.append((Speculative_Pruning(node_to_feed, None, None), move))
+        new_board, next_player = first_child.New_State(move)
+        new_node = Node(new_board, next_player, first_child)
+        first_child.add_child(new_node)
+        choose_from.append(Speculative_Pruning(new_node, first_child.score, root.score))
     
     #pick move with lowest value
-    find_min = []
-    for value in choose_from:
-        find_min.append(value)
-    lowest = min(find_min)
-    index = find_min.index(lowest)
-    chosen_move = choose_from[index][1]
+    lowest = min(choose_from)
+    index = choose_from.index(lowest)
+    chosen_move = moves[index]
     
     return chosen_move  
     
     
-def Make_Move(players, trains, current_player):
+def Make_Move(players, trains, pile, current_player):
     
     Closed_Gate = False
-    move = Find_Best_Move(players, trains, current_player)
+    move = Find_Best_Move(players, trains, pile, current_player)
     if move[1][0] == move[1][1]:
         Closed_Gate = True
     
@@ -156,7 +150,3 @@ def Make_Move(players, trains, current_player):
         
     else:
         return Closed_Gate, move[0]
-    
-    
-
-

@@ -37,4 +37,11 @@ class Pile:
         return piece
 
     
-
+    def Fake_Pick_Up(self):
+        """ 
+        This is for the node tree to be able to simulate picking up without altering the real pile
+        """
+        if self.tiles:
+            return self.tiles[-1]
+        else:
+            return None

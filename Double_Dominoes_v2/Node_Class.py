@@ -38,8 +38,22 @@ class Node:
         """ 
         Returns all the available moves for the current player
         """ 
-        
-        player_tiles = self.board[1][self.current_player].tiles
+        #sets the possible tiles the player could have
+        if self.current_player == 0:
+            player_tiles = self.board[1][0].tiles
+        else:
+            unavailable_tiles = self.board[1][0].tiles
+            played_tiles = []
+            player_tiles = []
+            for train in self.board[0]:
+                for tile in train.store:
+                    played_tiles.append(tile)
+            for i in range(13):
+                for j in range(13):
+                    tile = (i,j)
+                    if tile not in played_tiles and tile not in unavailable_tiles:
+                        player_tiles.append(tile)
+            
         trains = self.board[0]
         options = {}
         moves = []
@@ -78,9 +92,9 @@ class Node:
     
     def New_State(self, move):
         """ 
-        Takes a given move and changes the board accordingly
+        Takes a given move and changes the board accordingly, returns the new state and the next player
         """
-        if len(move) == 3:
+        if move:
             new_board = copy.deepcopy(self.board)
             
             #play tile on train
@@ -90,7 +104,10 @@ class Node:
                 new_board[0][move[0]].store.append(move[1])
                 
             #remove tile from player hand
-            new_board[1][self.current_player].tiles.remove(move[1])
+            if self.current_player == 0:
+                new_board[1][self.current_player].tiles.remove(move[1])
+            else:
+                new_board[1][self.current_player].tiles.pop()
             
             next_player = self.Rotate_Player()
             
@@ -98,7 +115,11 @@ class Node:
         else:
             #add tile to player hand
             new_board = copy.deepcopy(self.board)
-            new_board[1][self.current_player].tiles.append(move)
+            picked_tile = self.board[2].Fake_Pick_Up()           
+            
+            if picked_tile:    
+                new_board[1][self.current_player].tiles.append(picked_tile)
+                new_board[2].tiles.remove(picked_tile)
             
             next_player = self.Rotate_Player()
             
@@ -108,8 +129,6 @@ class Node:
     def Evaluate_Board(self):
         """ 
         Evaluates the board and assigns a score to it based of the current players hand, and what is already played
-        Evaluation is stored in player order and scores are in the negative ranging to 0
-        Parameter for board in format (trains, players)
         """
         
         #determining estimated value of players hand, this is a very broad estimate
@@ -137,12 +156,14 @@ class Node:
         moves = self.Give_Options()
         children = []
         
-        if moves:
+        if moves == None:
+            board, next_player = self.New_State(None)
+            next_node = Node(board, next_player, parent_node = self)
+            children.append(next_node)
+        else:
             for move in moves:
                 board, next_player = self.New_State(move)
                 next_node = Node(board, next_player, parent_node = self)
                 children.append(next_node)
-        else:
-            return children
-                
+         
         return children
