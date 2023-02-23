@@ -1,3 +1,9 @@
-sum = 658/689
+sum = 0
 
-print(sum)
+for i in range(13):
+    for j in range(13):
+        print((i,j))
+        sum += j
+        sum += i
+
+print(sum - 24)

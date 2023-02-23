@@ -2,6 +2,7 @@ import Functions
 import AI_1
 import AI_2
 import AI_3
+import AI_4
 import copy
 
 def Who_Wins(scores):
@@ -107,7 +108,7 @@ def Start_Game(num_players):
                     #if there are no more tiles to pick up and a gate is closed the scores will be tally and round ended
                     #could use match case here but doesn't really matter
                     if player_num == 0:
-                        gated, which_train = AI_3.Make_Move(players, trains, pile, player_num)
+                        gated, which_train = AI_4.Make_Move(players, trains, pile, player_num)
                     elif player_num == 1:
                         gated, which_train = AI_1.Make_Move(players, trains, player_num)
                     elif player_num == 2:

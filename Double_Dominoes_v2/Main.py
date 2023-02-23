@@ -4,7 +4,7 @@ import sys
 """
 Simulates games with a variable number of AI players
 """
-sys.setrecursionlimit(100000)
+sys.setrecursionlimit(1000000)
 
 player_wins = {}
 num_players = 3
