@@ -10,7 +10,7 @@ class Node:
         self.current_player = current_player
         self.children = []
         self.parent = parent_node
-        self.Evaluate_Board_Cheat()
+        self.Evaluate_Board()
 
     
     def add_child(self, node):
@@ -28,12 +28,12 @@ class Node:
         yield self
             
     
-    def Give_Options(self):
+    def Give_Options(self, current_player):
         """ 
         Returns all the available moves for the current player
         """ 
         #sets the possible tiles the player could have
-        if self.current_player == 0:
+        if current_player == 0:
             player_tiles = copy.copy(self.board[1][0].tiles)
         else:
             unavailable_tiles = copy.copy(self.board[1][0].tiles)
@@ -61,45 +61,15 @@ class Node:
         for option in options:
             for tile in player_tiles:
                 if tile[0] == options[option]:
-                    moves.append((option, tile, False))
+                    moves.append((option, tile, False, current_player))
                 if tile[1] == options[option]:
-                    moves.append((option, tile, True))
+                    moves.append((option, tile, True, current_player))
         
         #give option to pick up if there aren't any moves available            
         if not moves:
             return None
                     
         return moves  
-    
-    
-    def Give_Options_Cheat(self):
-        """ 
-        Gives available moves by cheating, i.e. looking at the opponent tiles
-        """
-        #setup
-        player_tiles = copy.copy(self.board[1][self.current_player].tiles)
-        trains = self.board[0]
-        options = {}
-        moves = []
-        
-        #checks which trains are open
-        for train in trains:
-            if train.open or train.name == self.current_player:
-                options[train.name] = train.last_tile
-            
-        #creates list of possible moves and sets flip variable
-        for option in options:
-            for tile in player_tiles:
-                if tile[0] == options[option]:
-                    moves.append((option, tile, False))
-                if tile[1] == options[option]:
-                    moves.append((option, tile, True))
-        
-        #give option to pick up if there aren't any moves available            
-        if not moves:
-            return None
-                    
-        return moves 
         
         
     def Rotate_Player(self):
@@ -112,38 +82,7 @@ class Node:
             return 2
         else:
             return 0
-    
-    
-    def New_State_Cheat(self,move):
-        """ 
-        Takes a given move and changes the board accordingly, returns the new state and the next player
-        """
-        if move:
-            new_board = copy.deepcopy(self.board)
-            
-            #play tile on train
-            if move[2]:
-                new_board[0][move[0]].store.append((move[1][1], move[1][0]))
-            else:
-                new_board[0][move[0]].store.append(move[1])
-                
-            #remove tile from player hand
-            new_board[1][self.current_player].tiles.remove(move[1])
-            
-            next_player = self.Rotate_Player()
-            
-            return new_board, next_player
-        else:
-            #add tile to player hand
-            new_board = copy.deepcopy(self.board)
-            picked_tile = self.board[2].Pick_Up()           
-            
-            if picked_tile:    
-                new_board[1][self.current_player].tiles.append(picked_tile)
-            
-            next_player = self.Rotate_Player()
-            
-            return new_board, next_player 
+
         
     def New_State(self, move):
         """ 
@@ -159,10 +98,10 @@ class Node:
                 new_board[0][move[0]].store.append(move[1])
                 
             #remove tile from player hand
-            if self.current_player == 0:
-                new_board[1][self.current_player].tiles.remove(move[1])
+            if move[3] == 0:
+                new_board[1][move[3]].tiles.remove(move[1])
             else:
-                new_board[1][self.current_player].tiles.pop()
+                new_board[1][move[3]].tiles.pop()
             
             next_player = self.Rotate_Player()
             
@@ -173,33 +112,12 @@ class Node:
             picked_tile = self.board[2].Fake_Pick_Up()           
             
             if picked_tile:    
-                new_board[1][self.current_player].tiles.append(picked_tile)
+                new_board[1][move[3]].tiles.append(picked_tile)
                 new_board[2].tiles.remove(picked_tile)
             
             next_player = self.Rotate_Player()
             
-            return new_board, next_player       
-          
-        
-    def Evaluate_Board_Cheat(self):
-        """ 
-        Evaluates the board by cheating, i.e. looking at the opponents tiles
-        """ 
-        player_tiles = self.board[1][self.current_player].tiles
-        sum_player = 0
-        for tile in player_tiles:
-            sum_player += tile[0]
-            sum_player += tile[1]
-               
-        total_points_remaining = 2004
-        
-        for train in self.board[0]:
-            for tile in train.store:
-                if tile != (12,12):
-                    total_points_remaining -= tile[0]
-                    total_points_remaining -= tile[1]
-        
-        self.score = sum_player/total_points_remaining       
+            return new_board, next_player   
         
         
     def Evaluate_Board(self):
@@ -229,7 +147,7 @@ class Node:
         """ 
         Creates children nodes based of available moves
         """
-        moves = self.Give_Options()
+        moves = self.Give_Options(self.current_player)
         children = []
         
         if not moves:
@@ -242,24 +160,4 @@ class Node:
                 next_node = Node(board, next_player, parent_node = self)
                 children.append(next_node)
          
-        return children
-    
-    
-    def Create_Children_Cheat(self):
-        """ 
-        Creates children nodes by using the cheating methods
-        """
-        moves = self.Give_Options_Cheat()
-        children = []
-        
-        if not moves:
-            board, next_player = self.New_State_Cheat(None)
-            next_node = Node(board, next_player, parent_node = self)
-            children.append(next_node)
-        else:
-            for move in moves:
-                board, next_player = self.New_State_Cheat(move)
-                next_node = Node(board, next_player, parent_node = self)
-                children.append(next_node)
-        
         return children
