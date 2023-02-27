@@ -1,7 +1,8 @@
+from Node_Class import Node 
 import Functions
-from Node_Class import Node
-import copy
- 
+
+nodes_searched = 0
+
 def Terminal(node):
     """ 
     Returns True or False based on whether game is over
@@ -34,40 +35,41 @@ def Terminal(node):
     return False
 
 
-
-def Best_Reply_Search(node, alpha, beta, turn):
+def Max_N(node):
     """ 
-    BRS variant of the MaxN algorithm
+    MaxN algorithm with node search limit
     """
-    if Terminal(node):
+    global nodes_searched
+    
+    if nodes_searched > 3000:
         return node.score
     
-    if turn == max:
-        moves = node.Give_Options(node.current_player)
-        turn = min
-    else:
-        moves = []
-        for i in range(1,3):
-            set_moves = node.Give_Options(i)
-            for move in set_moves:
-                moves.append(move)
-        turn = max
-        
-    if moves:
-            
-        for move in moves:
-            new_board, next_player = node.New_State(move)
-            new_node = Node(new_board, next_player, node)
-            v = -Best_Reply_Search(new_node, -beta, -alpha, turn)
-            
-            if v >= beta:
-                return v
-            
-            alpha = max(alpha, v)
-        
-    return alpha
-        
+    if Terminal(node):
+        return node.score 
     
+    children = node.Create_Children_Nodes()
+    for child in children:
+        node.add_child(child)
+    nodes = node.__iter__()
+    
+    exit = False
+    for child_node in nodes:
+        nodes_searched += 1
+        if exit:
+            break
+        exit = True
+        best = Max_N(child_node)
+        
+    for remaining_node in nodes:
+        nodes_searched += 1
+        current = Max_N(remaining_node)
+        if (current > best):
+            best = current
+    
+    return best
+        
+
+
 def Find_Best_Move(players, trains, pile, current_player):
     """ 
     Calls the search algorithm and deduces the correct path
@@ -75,29 +77,25 @@ def Find_Best_Move(players, trains, pile, current_player):
     #setup
     board = (trains, players, pile)
     root = Node(board, current_player)
-    first_child = Node(board, current_player, root)
-    root.add_child(first_child)
+    global nodes_searched
     
     #go through moves
     choose_from = []
-    moves = first_child.Give_Options(current_player)
+    moves = root.Give_Options(current_player)
     for move in moves:
-        new_board, next_player = first_child.New_State(move)
-        new_node = Node(new_board, next_player, first_child)
-        first_child.add_child(new_node)
-        choose_from.append(Best_Reply_Search(new_node, first_child.score, new_node.score, turn = max))
-    
-    for choice in choose_from:
-        print(f"Evaluation: {choice}")
-        
+        new_board, next_player = root.New_State(move)
+        new_node = Node(new_board, next_player)
+        nodes_searched = 0
+        choose_from.append(Max_N(new_node))
+
     #pick move with lowest value
     lowest = min(choose_from)
     index = choose_from.index(lowest)
     chosen_move = moves[index]
     
     return chosen_move  
-    
-    
+
+
 def Make_Move(players, trains, pile, current_player):
     
     Closed_Gate = False

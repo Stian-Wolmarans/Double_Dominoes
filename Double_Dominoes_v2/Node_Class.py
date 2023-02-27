@@ -3,13 +3,11 @@ from itertools import chain
 
 class Node:
     
-    def __init__ (self, board, current_player, parent_node = None):
+    def __init__ (self, board, current_player):
         self.score = 0
         self.board = board
-        self.best = None
         self.current_player = current_player
         self.children = []
-        self.parent = parent_node
         self.Evaluate_Board()
 
     
@@ -61,9 +59,9 @@ class Node:
         for option in options:
             for tile in player_tiles:
                 if tile[0] == options[option]:
-                    moves.append((option, tile, False, current_player))
+                    moves.append((option, tile, False))
                 if tile[1] == options[option]:
-                    moves.append((option, tile, True, current_player))
+                    moves.append((option, tile, True))
         
         #give option to pick up if there aren't any moves available            
         if not moves:
@@ -98,10 +96,10 @@ class Node:
                 new_board[0][move[0]].store.append(move[1])
                 
             #remove tile from player hand
-            if move[3] == 0:
-                new_board[1][move[3]].tiles.remove(move[1])
+            if self.current_player == 0:
+                new_board[1][0].tiles.remove(move[1])
             else:
-                new_board[1][move[3]].tiles.pop()
+                new_board[1][self.current_player].tiles.pop()
             
             next_player = self.Rotate_Player()
             
@@ -112,7 +110,7 @@ class Node:
             picked_tile = self.board[2].Fake_Pick_Up()           
             
             if picked_tile:    
-                new_board[1][move[3]].tiles.append(picked_tile)
+                new_board[1][self.current_player].tiles.append(picked_tile)
                 new_board[2].tiles.remove(picked_tile)
             
             next_player = self.Rotate_Player()
@@ -152,12 +150,12 @@ class Node:
         
         if not moves:
             board, next_player = self.New_State(None)
-            next_node = Node(board, next_player, parent_node = self)
+            next_node = Node(board, next_player)
             children.append(next_node)
         else:
             for move in moves:
                 board, next_player = self.New_State(move)
-                next_node = Node(board, next_player, parent_node = self)
+                next_node = Node(board, next_player)
                 children.append(next_node)
          
         return children

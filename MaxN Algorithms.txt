@@ -1,0 +1,89 @@
+MAX^N STYLE ALGORITHMS
+
+
+MAX^N
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Maxn(Node, Player)
+{
+IF Node is terminal
+	RETURN static value
+Best = Maxn(first Child, next Player)
+FOR each remaining Child of Node
+	Curr = Maxn(Child, next Player)
+	if (Curr[Player] > Best[Player])
+	Best = Curr
+RETURN Best
+}
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+SPECULATIVE PRUNING
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+specmaxn(Node, ParentNodeScore, GrandparentNodeScore)
+{
+best = NIL
+specPrunedQ = NIL
+
+if terminal(node):
+	return static eval(node)
+
+for each child(Node):
+ 	if (best[previous Player] <= ParentScore):
+		result = specmaxn(next child(Node),best[current Player], ParentScore)
+ 	else:
+		result = specmaxn(next child(Node),best[current Player], 0)
+ 	if (best == NIL):
+ 		best = result
+ 	else if (result == NIL):
+ 		add Child to specPrunedQ
+ 	else if (best[current Player] < result[current Player]):
+ 		best = result
+ 		if (best[previous Player] > ParentScore):
+ 			re-add specPrunedQ to child list
+ 	if (GrandparentScore+ParentScore+best[current Player] > maxsum):
+ 		return NIL
+return best
+}
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+APPROXIMATE DEEP SEARCH
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+approxdeepmaxn(Node, allBest)
+{
+myBest = allBest
+if terminal(node):
+	return static eval(node)
+for each child(Node):
+	myBest[Node->player] = approxdeepmaxn(next child(Node),myBest)
+ 	if (∑myBest ≥ maxsum):
+		return myBest[Node->player]
+return myBest[Node->player]
+}
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+BEST-REPlY SEARCH
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+BRS(alpha, beta, depth, turn)
+{
+if depth ≤ 0:
+	return eval()
+if turn == MAX:
+	Moves = GenerateMoves(MaxPlayer)
+	turn = MIN
+else
+	for each Oppponent:
+		Moves += GenerateMoves(oppponent)
+	turn = MAX
+for move in moves:
+	doMove(move)
+	v = −BRS(−beta, −alpha, depth−1, turn)
+	undoMove(move)
+	if v ≥ beta:
+		return v
+
+	alpha = max(alpha, v)
+return alpha
+}
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
