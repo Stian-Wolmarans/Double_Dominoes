@@ -1,5 +1,7 @@
 # Double Dominoes
 
+This is my first project and zero time went into design so please forgive my spaghetti code...
+
 ## Introduction
 For this project I simulated games of Double Dominoes and created three AI's to play against one another. Doing this I learned a bit about search algorithms and will share that with you. The first thing to consider when implementing a search algorithm in a game is the evaluation function. This function is used in many search algorithms and will return a value range based on the current state of the board. Essentially, the goal is to search a tree (every node layer is a turn and every branch a possible move) and find a path that reaches a node which has a good evaluation for that player. In order for this to work however the same evaluation function needs to run when it's an opponents turn on the tree in order to determine their possible scores as well. The challange for certain games is limited information, for example card games compared to chess. In chess we are given exactly the same information about a board as our opponent, where as in a card game (or in this case dominoes) the only information we have is what pieces we have, how many pieces our opponent has and what has already been played. So it is a bit tricky to come up with an effective evaluation function as domino scores are highly depended on the value of a tile. The simple fact remains for non-perfect information games the evaluation function needs to work for all players not only the player who's information we have. 
 
@@ -11,6 +13,9 @@ Pruning is technically always less optimal at finding the best move but can be m
 
 ## Game Rules
 Double Dominoes - also known as Mexican Train - is like dominoes with a few added rules. Firstly, the numbers go up to twelve. Each player has their own "Train" where they can play their tiles. The game is started with the double 12 in the middle. Players take turns building their trains, if they can't play their train is "Opened" meaning other players can play on their train. If a player plays on their own "Open" train it is closed again and only they can play on it. Additionally, there is a "Sauce" train which is always open and anyone can play on. If a player can't play on their own train but can play on another train their train remains closed. Lastly if a double ("Gate") is played (e.g. 11-11 on a 8-11) then play can only resume once another tile has been played on the double (e.g. 11-6 on the 11-11), players take turns trying to play on the double and can't play on any other trains until the "Gate" is opened, the person who played the double is the first person who needs to attempt to open it, if a player cannot open the gate they must pick up. Round ends when a player has finished their tiles or no one can play and there are no more tiles to pick up. A players score per round is the sum of numbers on their left-over tiles, play continues until a player hits 100, then whoever has the lowest score wins.
+
+## Results
+- With basic strategy after 10 000 games AI_2 wins 32% of the time against three other AI_1 players which is somewhat above the random distribution of 25%. Against 5 other AI_1 players it won 20% (16% random distribution), against 2 other AI_1's it won 47% (33% random distribution) and against only 1 AI_1 it won 70% of the time.
 
 ## The AI
 ### AI_1 
@@ -35,9 +40,6 @@ Double Dominoes - also known as Mexican Train - is like dominoes with a few adde
 ### "Functions.py" ----> Classes (Players, Pile, Trains)
 - Functions uses these classes and initiates them when called by the simulator so the data is all passed through and "Simulator.py" doesn't need to import any classes. When calling the Closed_Gate() and calling the AI moves all the data is passed into those functions and returned back to simulator, there is probably a way to access the data in a more efficient way. 
 
-## Results
-- With basic strategy after 10 000 games AI_2 wins 32% of the time against three other AI_1 players which is somewhat above the random distribution of 25%. Against 5 other AI_1 players it won 20% (16% random distribution), against 2 other AI_1's it won 47% (33% random distribution) and against only 1 AI_1 it won 70% of the time.
-
 ## Notes
 - Game only works with three players when using the search AI's, this was a deliberate choice as it simplified implementing the search algorithm and building the node class.
 
@@ -46,7 +48,3 @@ Double Dominoes - also known as Mexican Train - is like dominoes with a few adde
 - To compare the AI's I had them initially play 10 000 games after each change I made. For some reason when there are only 2 players the simulation hangs at certain points, haven't looked into why that is, seems like it gets stuck in some loops.
 
 - The sequence creator functions are a bit of a mess but it seems to work and don't think it's worth optimizing as it doesn't seem to significantly slow the program.
-
-
-## TODO
-- Investigate Neural Networks and Machine Learning...
