@@ -23,7 +23,7 @@ Double Dominoes - also known as Mexican Train - is like dominoes with a few adde
 ### AI_2 
 - Plays somewhat strategically by building sequences in its hand and prioritizing where it plays. Firstly it will check for "Interrupting Moves", a move that limits other players ability to play (currently it only calls this function if the move would mean other players can't play at all, I also played around with playing tiles that somewhat limit other player moves but after running some simulations noticed it barely made a difference since it is only until the last few turns when this tactic actually makes a difference and if it takes priority over the sequence moves then it doesn't improve winning chances). Next it prioritizes playing on its own train using a sequence from its hand (The "best" sequence is selected from all possible generated sequences, the chosen sequence factors in sequence length, amount of doubles in sequence and the total value of all the tiles in the sequence). Then it will prioritize playing high value tiles on the "sauce" train, and as a last resort it will play on other players trains.
 ### AI_3
-- Currently uses the Max^N Algorithm with a search limit applied. The reason for the search limit was so that it would run fast enough to do a test of win distribution vs the other AI's.
+- Currently uses the Max^N Algorithm with a search limit applied. The reason for the search limit was so that it would run fast enough to do a test of win distribution vs the other AI's. The reason for using this algorithm is explained in the introduction and essentially the search limit results in it playing psuedo randomly until the later stages of the game when search width/depth is not an issue.
 
 ## Program
 ### 'Node_Class.py'
