@@ -106,12 +106,11 @@ def Start_Game(num_players):
                     #also checks for "Closed Gate" and runs the procedure for closed gate if needed
                     #if there are no more tiles to pick up and a gate is closed the scores will be tally and round ended
                     #could use match case here but doesn't really matter
-                    if player_num == 0:
-                        gated, which_train = AI_3.Make_Move(players, trains, pile, player_num)
-                    elif player_num == 1:
-                        gated, which_train = AI_1.Make_Move(players, trains, player_num)
-                    elif player_num == 2:
-                        gated, which_train = AI_1.Make_Move(players, trains, player_num)
+                    match player_num:
+                        case 0:
+                            gated, which_train = AI_3.Make_Move(players, trains, pile, player_num)
+                        case 1|2|3|4|5:
+                            gated, which_train = AI_1.Make_Move(players, trains, player_num)
                     if gated:
                         if Functions.Closed_Gate(players, trains[which_train], player_num, pile, num_players):
                             scores = Tally_Scores(players, scores)

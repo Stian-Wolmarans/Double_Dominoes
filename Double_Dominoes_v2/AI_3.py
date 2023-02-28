@@ -41,7 +41,7 @@ def Max_N(node):
     """
     global nodes_searched
     
-    if nodes_searched > 3000:
+    if nodes_searched > 5000:
         return node.score
     
     if Terminal(node):
