@@ -46,7 +46,6 @@ Double Dominoes - also known as Mexican Train - is like dominoes with a few adde
 - Functions uses these classes and initiates them when called by the simulator so the data is all passed through and "Simulator.py" doesn't need to import any classes. When calling the Closed_Gate() and calling the AI moves all the data is passed into those functions and returned back to the simulator, there is probably a way to access the data in a more efficient way but I haven’t looked into it. 
 
 ## Notes
-- Game only works with three players when using the search AI's, this was a deliberate choice as it simplified implementing the search algorithm and building the node class.
 
 - I initially decided to use numpy instead of lists to store tiles. I thought the difference in speed would probably be negligible and lists would've been a lot simpler, but I wanted to try and get familiar with the library. I only later discovered that numpy is very slow when appending things to an array as it creates a new copy every time. Lists is also a lot easier to index tiles as a list of tuples can be used.
 
