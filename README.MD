@@ -9,13 +9,6 @@ For an in-depth analysis of gaming search algorithms check out "Multiplayer Game
 ## Objective
 For this project I simulated games of Double Dominoes and created three AIs to play against one another. Through this exercise I learnt about search algorithms and want to share that with you. 
 
-## Game Rules
-Double Dominoes - also known as Mexican Train - is like dominoes with a few added rules. Firstly, the numbers go up to twelve. Each player has their own "Train" where they can play their tiles. The game starts with the double 12 placed as an opening piece in the middle. Players take turns building their trains, and can only place their tiles on their own train. If a player cannot play their train is "Opened", meaning other players can temporarily play on their train. If a player plays on their own "Open" train it is closed again, and once again only they can play on it. In addition to the players' trains, there is a "Sauce" train which is always open for any player to play on. If a player cannot play on their own train but can play on another train, then their train remains closed. 
-
-Lastly if a double ("Gate") is played (e.g. a block where both sides of the block contain the same number of dots) by any player on any train then the game is frozen and normarl play can only resume once another tile has been played on the double. Players take turns trying to play on the double and cannot play on any other trains until the "Gate" is opened. The player who played the double is the first person who must attempt to open it, and if a player cannot open the gate they must pick up. 
-
-The round ends when a player has finished their tiles, or no one can play and there are no more tiles left to pick up. A player's score per round is the sum of numbers on their unplayed tiles. Play continues until a player hits 100 points, then whoever has the lowest score wins.
-
 ## Key Challenges
 The first thing to consider when implementing a search algorithm in a game is the evaluation function. This function is used in many search algorithms and will return a value range based on the current state of the board. Essentially, the goal is to search a tree (every node layer is a turn and every branch a possible move) and find a path that reaches a node which has a good evaluation for that player - evaluation being a value which relates to winning chances. For this to work the same evaluation function needs to run when it's an opponent’s turn on the tree in order to determine the best possible scores for the opponent as well. 
 
@@ -36,6 +29,13 @@ Lastly, other search algorithms are more complicated to implement than plain Max
 ## Results
 - With basic strategy after 10 000 games AI_2 wins 32% of the time against three other AI_1 players which is above the random distribution of 25%. Against 5 other AI_1 players AI_2 won 20% of the games (16% random distribution), against 2 other AI_1's it won 47% (33% random distribution) and against only 1 AI_1 it won 70% of the time.
 - At 3000 node search limit after 1000 games AI_3 played equally to two random players. Thus node depth needs to be higher, or a better solution to node sorting and searching needs to be implemented. 
+
+## Game Rules
+Double Dominoes - also known as Mexican Train - is like dominoes with a few added rules. Firstly, the numbers go up to twelve. Each player has their own "Train" where they can play their tiles. The game starts with the double 12 placed as an opening piece in the middle. Players take turns building their trains, and can only place their tiles on their own train. If a player cannot play their train is "Opened", meaning other players can temporarily play on their train. If a player plays on their own "Open" train it is closed again, and once again only they can play on it. In addition to the players' trains, there is a "Sauce" train which is always open for any player to play on. If a player cannot play on their own train but can play on another train, then their train remains closed. 
+
+Lastly if a double ("Gate") is played (e.g. a block where both sides of the block contain the same number of dots) by any player on any train then the game is frozen and normarl play can only resume once another tile has been played on the double. Players take turns trying to play on the double and cannot play on any other trains until the "Gate" is opened. The player who played the double is the first person who must attempt to open it, and if a player cannot open the gate they must pick up. 
+
+The round ends when a player has finished their tiles, or no one can play and there are no more tiles left to pick up. A player's score per round is the sum of numbers on their unplayed tiles. Play continues until a player hits 100 points, then whoever has the lowest score wins.
 
 ## The AI
 ### AI_1 
