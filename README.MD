@@ -1,4 +1,4 @@
-# Double Dominoes
+# Investigating Seach Algorithms In Game Setting
 
 The scope of this project included simulating a game of double-dominoes and testing various search algorithms, however, not much time went into the design so the code is not optimized.
 
